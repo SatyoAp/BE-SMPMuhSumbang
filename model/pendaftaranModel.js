@@ -1,11 +1,17 @@
 import { Sequelize } from "sequelize";
 import db from "../config/database.js";
+import nilai from "./nilaiModel.js";
 
 const { DataTypes } = Sequelize;
 
 const Pendaftaran = db.define(
   "pendaftaran",
   {
+    id_daftar: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     nama: {
       type: DataTypes.STRING,
     },
@@ -30,16 +36,7 @@ const Pendaftaran = db.define(
     asal_sekolah: {
       type: DataTypes.TEXT,
     },
-    nilai_IPA: {
-      type: DataTypes.INTEGER,
-    },
-    nilai_Matematika: {
-      type: DataTypes.INTEGER,
-    },
-    nilai_Bhs_Indonesia: {
-      type: DataTypes.INTEGER,
-    },
-    total: {
+    id_nilai: {
       type: DataTypes.INTEGER,
     },
   },
@@ -47,5 +44,16 @@ const Pendaftaran = db.define(
     freezeTableName: true,
   }
 );
+
+Pendaftaran.associate = ({ nilai }) => {
+  nilai.belongsToMany(nilai, {
+    foreignKey: "id_nilai",
+    as: "nilai",
+    through: Pendaftaran,
+    otherKey: "id_daftar",
+  });
+};
+
+return Pendaftaran;
 
 export default Pendaftaran;

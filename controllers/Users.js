@@ -1,7 +1,14 @@
 import Users from "../model/usersModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUsersById } from "../services/ServUsers.js";
+import dotenv from "dotenv";
+import {
+  findUsersById,
+  removeUsersById,
+  updateUsersById,
+} from "../services/ServUsers.js";
+
+dotenv.config();
 
 export const getUsers = async (req, res) => {
   try {
@@ -110,4 +117,26 @@ export const Logout = async (req, res) => {
   );
   res.clearCookie("refreshToken");
   return res.sendStatus(200);
+};
+
+export const deleteUsersById = async (req, res, next) => {
+  try {
+    await removeUsersById(req.params.id);
+    res.json({
+      message: httpStatusMessages[res.statusCode],
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const putUsersById = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    await updateUsersById(req.params.id, name, email, password);
+    const Doctor = await findUsersById(req.params.id);
+    res.json(Users);
+  } catch (error) {
+    console.log(error);
+  }
 };
