@@ -4,6 +4,16 @@ import jwt from "jsonwebtoken";
 
 export const getUsers = async (req, res) => {
   try {
+    const users = await Users.findAll();
+    res.json(users);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getUsersById = async (req, res) => {
+  try {
     // Jika ID diberikan, ambil data berdasarkan ID
     if (id) {
       const users = await Users.findOne(req.params.id); // Menggunakan findByPk untuk mencari berdasarkan primary key (ID)
@@ -12,9 +22,6 @@ export const getUsers = async (req, res) => {
       }
       return res.json(users);
     }
-    // Jika tidak ada ID, ambil semua data users
-    const users = await Users.findAll();
-    res.json(users);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
