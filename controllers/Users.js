@@ -12,16 +12,16 @@ export const getUsers = async (req, res) => {
   }
 };
 
-export const getUsersById = async (req, res) => {
+export const getUsersById = async (req, res, id) => {
   try {
-    // Jika ID diberikan, ambil data berdasarkan ID
-    if (id) {
-      const users = await Users.findOne(req.params.id); // Menggunakan findByPk untuk mencari berdasarkan primary key (ID)
-      if (!users) {
-        return res.status(404).json({ message: "users not found" });
-      }
-      return res.json(users);
+    const findById = Users.findOne({
+      where: { id },
+    });
+    const users = await findById(req.params.id);
+    if (!users) {
+      return res.status(404).json({ message: "users not found" });
     }
+    res.json(users);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
