@@ -6,7 +6,7 @@ export const getUsers = async (req, res) => {
   try {
     // Jika ID diberikan, ambil data berdasarkan ID
     if (id) {
-      const users = await Users.findByPk(id); // Menggunakan findByPk untuk mencari berdasarkan primary key (ID)
+      const users = await Users.findOne(id); // Menggunakan findByPk untuk mencari berdasarkan primary key (ID)
       if (!users) {
         return res.status(404).json({ message: "users not found" });
       }
