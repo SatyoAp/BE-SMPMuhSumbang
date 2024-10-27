@@ -12,12 +12,9 @@ export const getUsers = async (req, res) => {
   }
 };
 
-export const getUsersById = async (req, res, id) => {
+export const getUsersById = async (req, res) => {
   try {
-    const findById = Users.findOne({
-      where: { id },
-    });
-    const users = await findById(req.params.id);
+    const users = await findUsersById(req.params.id);
     if (!users) {
       return res.status(404).json({ message: "users not found" });
     }
