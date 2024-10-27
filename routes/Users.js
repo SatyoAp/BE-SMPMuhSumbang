@@ -4,7 +4,7 @@ import { verifyToken } from "../middleware/Token.js";
 import { refreshToken } from "../controllers/RefreshToken.js";
 
 const router = express.Router();
-router.get("/", getUsers);
+router.get("/:id?", getUsers);
 router.post("/register", Register);
 router.post("/login", Login);
 router.get("/token", refreshToken);

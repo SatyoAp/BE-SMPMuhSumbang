@@ -4,6 +4,15 @@ import jwt from "jsonwebtoken";
 
 export const getUsers = async (req, res) => {
   try {
+    // Jika ID diberikan, ambil data berdasarkan ID
+    if (id) {
+      const users = await Users.findByPk(id); // Menggunakan findByPk untuk mencari berdasarkan primary key (ID)
+      if (!users) {
+        return res.status(404).json({ message: "users not found" });
+      }
+      return res.json(users);
+    }
+    // Jika tidak ada ID, ambil semua data users
     const users = await Users.findAll();
     res.json(users);
   } catch (error) {
