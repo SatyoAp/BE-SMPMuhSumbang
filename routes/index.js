@@ -4,8 +4,8 @@ import { verifyToken } from "../middleware/Token.js";
 import { refreshToken } from "../controllers/RefreshToken.js";
 
 const router = express.Router();
-router.get("/users", getUsers);
-router.post("/users", Register);
+router.get("/", getUsers);
+router.post("/regis", Register);
 router.post("/login", Login);
 router.get("/token", refreshToken);
 router.delete("/logout", Logout);
