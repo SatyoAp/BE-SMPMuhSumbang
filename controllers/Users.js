@@ -1,6 +1,7 @@
 import Users from "../model/usersModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { findUsersById } from "../services/ServUsers.js";
 
 export const getUsers = async (req, res) => {
   try {
