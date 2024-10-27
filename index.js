@@ -12,7 +12,7 @@ dotenv.config();
 const server = express();
 startSequelize(db);
 
-const port = process.env.MYSQL_ADDON_PORT;
+const port = process.env.MYSQLPORT;
 
 try {
   await db.authenticate();

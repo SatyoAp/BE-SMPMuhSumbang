@@ -9,14 +9,14 @@ dotenv.config();
 //   dialect: "mysql",
 // });
 const db = new Sequelize(
-  process.env.MYSQL_ADDON_DB,
-  process.env.MYSQL_ADDON_USER,
-  process.env.MYSQL_ADDON_PASSWORD,
+  process.env.MYSQLDATABASE,
+  process.env.MYSQLUSER,
+  process.env.MYSQLPASSWORD,
   {
     dialect: "mysql",
     dialectModule: mysql2,
-    host: process.env.MYSQL_ADDON_HOST,
-    port: process.env.MYSQL_ADDON_PORT,
+    host: process.env.MYSQLHOST,
+    port: process.env.MYSQLPORT,
   }
 );
 
