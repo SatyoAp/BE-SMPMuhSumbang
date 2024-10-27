@@ -30,10 +30,10 @@ server.use(cors());
 // server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 server.use(cookieParser());
 server.use(express.json());
-// server.use(router);
-// server.use(pendaftaranRouter);
-server.use("/users", router);
-server.use("/pendaftaran", pendaftaranRouter);
+server.use(router);
+server.use(pendaftaranRouter);
+// server.use("/users", router);
+// server.use("/pendaftaran", pendaftaranRouter);
 
 server.listen(port, () => {
   console.log(`Server running di port ${port}`);
