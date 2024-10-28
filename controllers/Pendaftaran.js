@@ -16,11 +16,11 @@ export const getPendaftaran = async (req, res) => {
 
 export const getPendaftaranById = async (req, res) => {
   try {
-    const users = await findPendaftaranById(req.params.id_daftar);
-    if (!users) {
+    const daftar = await findPendaftaranById(req.params.id_daftar);
+    if (!daftar) {
       return res.status(404).json({ message: "users not found" });
     }
-    res.json(users);
+    res.json(daftar);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
