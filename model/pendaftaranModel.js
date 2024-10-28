@@ -45,15 +45,18 @@ const Pendaftaran = db.define(
   }
 );
 
-Pendaftaran.associate = ({ nilai }) => {
-  nilai.belongsToMany(nilai, {
-    foreignKey: "id_nilai",
-    as: "nilai",
-    through: Pendaftaran,
-    otherKey: "id_daftar",
-  });
-};
+// pendaftaran.associate = ({ nilai }) => {
+//   nilai.belongsToMany(nilai, {
+//     foreignKey: "id_nilai",
+//     as: "nilai",
+//     through: pendaftaran,
+//     otherKey: "id_daftar",
+//   });
+// };
 
-return Pendaftaran;
+// return pendaftaran;
+
+nilai.hasOne(Pendaftaran);
+Pendaftaran.belongsTo(nilai);
 
 export default Pendaftaran;

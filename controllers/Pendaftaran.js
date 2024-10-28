@@ -3,7 +3,7 @@ import {
   findPendaftaranById,
   removePendaftaranById,
   updatePendaftaranById,
-} from "../services/ServUsers.js";
+} from "../services/ServPendaftaran.js";
 
 export const getPendaftaran = async (req, res) => {
   try {
