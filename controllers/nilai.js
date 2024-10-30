@@ -41,15 +41,23 @@ export const deleteNilaiById = async (req, res, next) => {
 };
 
 export const postNilai = async (req, res) => {
-  const { nilai_IPA, nilai_Matematika, nilai_Bhs_Indonesia, rata_rata_nilai } =
-    req.body;
-  const nilai = await createNilai(
-    nilai_IPA,
-    nilai_Matematika,
-    nilai_Bhs_Indonesia,
-    rata_rata_nilai
-  );
-  res.json(nilai);
+  try {
+    const {
+      nilai_IPA,
+      nilai_Matematika,
+      nilai_Bhs_Indonesia,
+      rata_rata_nilai,
+    } = req.body;
+    const nilai = await createNilai(
+      nilai_IPA,
+      nilai_Matematika,
+      nilai_Bhs_Indonesia,
+      rata_rata_nilai
+    );
+    res.json(nilai);
+  } catch (error) {
+    res.json({ msg: "Data Nilai Berhasil di masukkan" });
+  }
 };
 
 export const putNilaiById = async (req, res) => {
