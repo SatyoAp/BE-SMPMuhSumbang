@@ -19,7 +19,7 @@ export const updateNilaiById = async (
   nilai_Bhs_Indonesia,
   rata_rata_nilai
 ) => {
-  return await Pendaftaran.update(
+  return await Nilai.update(
     {
       nilai_IPA,
       nilai_Matematika,

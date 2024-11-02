@@ -3,6 +3,7 @@ import db from "./config/database.js";
 import router from "./routes/Users.js";
 import pendaftaranRouter from "./routes/Pendaftaran.js";
 import nilaiRouter from "./routes/Nilai.js";
+import guruRouter from "./routes/Guru.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -36,6 +37,7 @@ server.use(express.json());
 server.use("/users", router);
 server.use("/pendaftaran", pendaftaranRouter);
 server.use("/nilai", nilaiRouter);
+server.use("/guru", guruRouter);
 
 server.listen(port, () => {
   console.log(`Server running di port ${port}`);
