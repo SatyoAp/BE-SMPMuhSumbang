@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 import db from "../config/database.js";
-import nilai from "./nilaiModel.js";
+// import nilai from "./nilaiModel.js";
 
 const { DataTypes } = Sequelize;
 
@@ -36,7 +36,16 @@ const Pendaftaran = db.define(
     asal_sekolah: {
       type: DataTypes.TEXT,
     },
-    id_nilai: {
+    nilai_IPA: {
+      type: DataTypes.INTEGER,
+    },
+    nilai_Matematika: {
+      type: DataTypes.INTEGER,
+    },
+    nilai_Bhs_Indonesia: {
+      type: DataTypes.INTEGER,
+    },
+    nilai_rata_rata: {
       type: DataTypes.INTEGER,
     },
   },
@@ -56,7 +65,7 @@ const Pendaftaran = db.define(
 
 // return pendaftaran;
 
-nilai.hasOne(Pendaftaran);
-Pendaftaran.belongsTo(nilai);
+// nilai.hasOne(Pendaftaran);
+// Pendaftaran.belongsTo(nilai);
 
 export default Pendaftaran;

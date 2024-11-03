@@ -2,7 +2,7 @@ import express from "express";
 import db from "./config/database.js";
 import router from "./routes/Users.js";
 import pendaftaranRouter from "./routes/Pendaftaran.js";
-import nilaiRouter from "./routes/Nilai.js";
+import kritikRouter from "./routes/Kritik.js";
 import guruRouter from "./routes/Guru.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -36,7 +36,7 @@ server.use(express.json());
 // server.use(pendaftaranRouter);
 server.use("/users", router);
 server.use("/pendaftaran", pendaftaranRouter);
-server.use("/nilai", nilaiRouter);
+server.use("/kritik", kritikRouter);
 server.use("/guru", guruRouter);
 
 server.listen(port, () => {

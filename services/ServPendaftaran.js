@@ -21,7 +21,11 @@ export const updatePendaftaranById = async (
   alamat,
   no_hp,
   nik,
-  asal_sekolah
+  asal_sekolah,
+  nilai_IPA,
+  nilai_Matematika,
+  nilai_Bhs_Indonesia,
+  nilai_rata_rata
 ) => {
   return await Pendaftaran.update(
     {
@@ -33,6 +37,10 @@ export const updatePendaftaranById = async (
       no_hp,
       nik,
       asal_sekolah,
+      nilai_IPA,
+      nilai_Matematika,
+      nilai_Bhs_Indonesia,
+      nilai_rata_rata,
     },
     {
       where: { id_daftar },
