@@ -45,8 +45,9 @@ export const postKritik = async (req, res) => {
     const { nama, email, kritik } = req.body;
     const kritik_ = await createKritik(nama, email, kritik);
     res.json(kritik_);
-  } catch (error) {
     res.json({ msg: "Data Kritik Berhasil di masukkan" });
+  } catch (error) {
+    res.json({ msg: "Data Kritik Gagal di masukkan" });
   }
 };
 

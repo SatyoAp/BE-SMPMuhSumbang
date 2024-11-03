@@ -25,7 +25,8 @@ export const updatePendaftaranById = async (
   nilai_IPA,
   nilai_Matematika,
   nilai_Bhs_Indonesia,
-  nilai_rata_rata
+  nilai_rata_rata,
+  status
 ) => {
   return await Pendaftaran.update(
     {
@@ -41,6 +42,7 @@ export const updatePendaftaranById = async (
       nilai_Matematika,
       nilai_Bhs_Indonesia,
       nilai_rata_rata,
+      status,
     },
     {
       where: { id_daftar },

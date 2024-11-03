@@ -48,6 +48,9 @@ const Pendaftaran = db.define(
     nilai_rata_rata: {
       type: DataTypes.INTEGER,
     },
+    status: {
+      type: DataTypes.STRING,
+    },
   },
   {
     freezeTableName: true,

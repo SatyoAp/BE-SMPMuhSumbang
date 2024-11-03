@@ -41,6 +41,7 @@ export const postPendaftaran = async (req, res) => {
     nilai_Matematika,
     nilai_Bhs_Indonesia,
     nilai_rata_rata,
+    status,
   } = req.body;
   try {
     await Pendaftaran.create({
@@ -56,6 +57,7 @@ export const postPendaftaran = async (req, res) => {
       nilai_Matematika,
       nilai_Bhs_Indonesia,
       nilai_rata_rata,
+      status,
     });
     res.json({ msg: "Input Berhasil" });
   } catch (error) {
@@ -89,6 +91,7 @@ export const putPendaftaranById = async (req, res) => {
     nilai_Matematika,
     nilai_Bhs_Indonesia,
     nilai_rata_rata,
+    status,
   } = req.body;
   await updatePendaftaranById(
     req.params.id_daftar,
@@ -103,7 +106,8 @@ export const putPendaftaranById = async (req, res) => {
     nilai_IPA,
     nilai_Matematika,
     nilai_Bhs_Indonesia,
-    nilai_rata_rata
+    nilai_rata_rata,
+    status
   );
   const daftar = await findNilaiById(req.params.id_daftar);
   res.json(daftar);
