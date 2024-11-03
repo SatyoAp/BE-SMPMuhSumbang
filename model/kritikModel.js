@@ -4,7 +4,7 @@ import db from "../config/database.js";
 const { DataTypes } = Sequelize;
 
 const Kritik = db.define(
-  "kriitk",
+  "kritik",
   {
     nama: {
       type: DataTypes.STRING,
