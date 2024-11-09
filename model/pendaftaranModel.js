@@ -7,7 +7,7 @@ const { DataTypes } = Sequelize;
 const Pendaftaran = db.define(
   "pendaftaran",
   {
-    id_daftar: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,

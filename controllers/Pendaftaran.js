@@ -16,7 +16,7 @@ export const getPendaftaran = async (req, res) => {
 
 export const getPendaftaranById = async (req, res) => {
   try {
-    const daftar = await findPendaftaranById(req.params.id_daftar);
+    const daftar = await findPendaftaranById(req.params.id);
     if (!daftar) {
       return res.status(404).json({ message: "users not found" });
     }
@@ -67,7 +67,7 @@ export const postPendaftaran = async (req, res) => {
 
 export const deletePendaftaranById = async (req, res, next) => {
   try {
-    await removePendaftaranById(req.params.id_daftar);
+    await removePendaftaranById(req.params.id);
     res.json({
       message: httpStatusMessages[res.statusCode],
     });
@@ -94,7 +94,7 @@ export const putPendaftaranById = async (req, res) => {
     status,
   } = req.body;
   await updatePendaftaranById(
-    req.params.id_daftar,
+    req.params.id,
     nama,
     tempat_lahir,
     tanggal_lahir,
@@ -109,6 +109,6 @@ export const putPendaftaranById = async (req, res) => {
     nilai_rata_rata,
     status
   );
-  const daftar = await findNilaiById(req.params.id_daftar);
+  const daftar = await findNilaiById(req.params.id);
   res.json(daftar);
 };

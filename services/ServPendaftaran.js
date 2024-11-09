@@ -1,19 +1,19 @@
 import Pendaftaran from "../model/pendaftaranModel.js";
 
-export const findPendaftaranById = async (id_daftar) => {
+export const findPendaftaranById = async (id) => {
   return await Pendaftaran.findOne({
-    where: { id_daftar },
+    where: { id },
   });
 };
 
-export const removePendaftaranById = async (id_daftar) => {
+export const removePendaftaranById = async (id) => {
   await Pendaftaran.destroy({
-    where: { id_daftar },
+    where: { id },
   });
 };
 
 export const updatePendaftaranById = async (
-  id_daftar,
+  id,
   nama,
   tempat_lahir,
   tanggal_lahir,
@@ -45,7 +45,7 @@ export const updatePendaftaranById = async (
       status,
     },
     {
-      where: { id_daftar },
+      where: { id },
     }
   );
 };
