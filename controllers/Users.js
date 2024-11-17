@@ -12,7 +12,9 @@ dotenv.config();
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await Users.findAll();
+    const users = await Users.findAll({
+      attributes: ["id", "name", "email"],
+    });
     res.json(users);
   } catch (error) {
     console.log(error);
@@ -94,7 +96,7 @@ export const Login = async (req, res) => {
     });
     res.json({ accessToken });
   } catch (error) {
-    res.status(404).json({ msg: "email tidak ditemukan" });
+    res.status(404).json({ msg: "Email Salah...!!" });
   }
 };
 

@@ -33,6 +33,9 @@ const Pendaftaran = db.define(
     nik: {
       type: DataTypes.STRING,
     },
+    jenis_kelamin: {
+      type: DataTypes.STRING,
+    },
     asal_sekolah: {
       type: DataTypes.TEXT,
     },

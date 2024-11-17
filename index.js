@@ -8,10 +8,10 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import bodyParser from "body-parser";
+const server = express();
 // import Pendaftaran from "./model/pendaftaranModel.js";
 import { startSequelize } from "./utils/startSequelize.js";
 dotenv.config();
-const server = express();
 startSequelize(db);
 
 const port = process.env.MYSQLPORT;
@@ -28,12 +28,12 @@ server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.raw());
 server.use(bodyParser.json());
 
-server.use(cors());
+server.use(
+  cors({ credentials: true, origin: "https://be-smp-muh-sumbang.vercel.app" })
+);
 // server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 server.use(cookieParser());
 server.use(express.json());
-// server.use(router);
-// server.use(pendaftaranRouter);
 server.use("/users", router);
 server.use("/pendaftaran", pendaftaranRouter);
 server.use("/kritik", kritikRouter);
