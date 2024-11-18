@@ -32,6 +32,7 @@ try {
 //   cors({ credentials: true, origin: "https://be-smp-muh-sumbang.vercel.app" })
 // );
 server.use(cors({ credentials: true, origin: "http://192.168.1.7:5174" }));
+server.use(cors({ credentials: true, origin: "http://192.168.1.7:5173" }));
 // server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 server.use(cookieParser());
 server.use(express.json());
