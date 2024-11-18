@@ -11,7 +11,7 @@ import { refreshToken } from "../controllers/RefreshToken.js";
 
 const router = express.Router();
 router.get("/", verifyToken, getUsers);
-router.get("/:id", getUsersById);
+// router.get("/:id", getUsersById);
 router.post("/register", Register);
 router.post("/login", Login);
 router.get("/token", refreshToken);

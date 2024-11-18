@@ -6,7 +6,7 @@ const { DataTypes } = Sequelize;
 const Guru = db.define(
   "guru",
   {
-    id_guru: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,

@@ -26,7 +26,7 @@ export const getUsersById = async (req, res) => {
   try {
     const users = await findUsersById(req.params.id);
     if (!users) {
-      return res.status(404).json({ message: "users not found" });
+      return res.status(404).json({ message: "users tidak found" });
     }
     res.json(users);
   } catch (error) {
@@ -92,7 +92,7 @@ export const Login = async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-      secure: true,
+      // secure: true,
     });
     res.json({ accessToken });
   } catch (error) {
@@ -125,10 +125,11 @@ export const Logout = async (req, res) => {
 export const deleteUsersById = async (req, res, next) => {
   try {
     await removeUsersById(req.params.id);
-    res.json({
-      message: httpStatusMessages[res.statusCode],
+    res.status(200).json({
+      message: "Data Berhasil dihapus",
     });
   } catch (e) {
+    console.error("Error deleting kritik:", e);
     next(e);
   }
 };
@@ -137,7 +138,7 @@ export const putUsersById = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     await updateUsersById(req.params.id, name, email, password);
-    const Doctor = await findUsersById(req.params.id);
+    const Users = await findUsersById(req.params.id);
     res.json(Users);
   } catch (error) {
     console.log(error);

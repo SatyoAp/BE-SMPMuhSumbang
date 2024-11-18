@@ -54,6 +54,12 @@ const Pendaftaran = db.define(
     status: {
       type: DataTypes.STRING,
     },
+    image: {
+      type: DataTypes.STRING,
+    },
+    url: {
+      type: DataTypes.STRING,
+    },
   },
   {
     freezeTableName: true,
