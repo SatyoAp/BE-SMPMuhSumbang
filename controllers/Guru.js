@@ -1,38 +1,38 @@
-import Guru from "../model/guruModel.js";
+import Info from "../model/infoModel.js";
 import {
-  createGuru,
-  findGuruById,
-  removeGuruById,
-  updateGuruById,
-} from "../services/ServGuru.js";
+  createInfo,
+  findInfoById,
+  removeInfoById,
+  updateInfoById,
+} from "../services/ServInfo.js";
 
-export const getGuru = async (req, res) => {
+export const getInfo = async (req, res) => {
   try {
-    const guru = await Guru.findAll();
-    res.json(guru);
+    const info = await Info.findAll();
+    res.json(info);
   } catch (error) {
     console.log(error);
   }
 };
 
-export const getGuruById = async (req, res) => {
+export const getInfoById = async (req, res) => {
   try {
-    const guru = await findGuruById(req.params.id);
-    if (!guru) {
+    const info = await findInfoById(req.params.id);
+    if (!info) {
       return res.status(404).json({
-        message: `data guru dengan id : ${req.params.id} tidak ada`,
+        message: `data info dengan id : ${req.params.id} tidak ada`,
       });
     }
-    res.json(guru);
+    res.json(info);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export const deleteGuruById = async (req, res, next) => {
+export const deleteInfoById = async (req, res, next) => {
   try {
-    await removeGuruById(req.params.id);
+    await removeInfoById(req.params.id);
     res.status(200).json({
       message: "Data Berhasil dihapus",
     });
@@ -43,35 +43,41 @@ export const deleteGuruById = async (req, res, next) => {
   }
 };
 
-export const postGuru = async (req, res) => {
+export const postInfo = async (req, res) => {
   try {
-    const { nama, jabatan, no_hp, email, mapel } = req.body;
-    if (!nama || !jabatan || !no_hp || !email || !mapel) {
+    const { tanggal_buka, tanggal_tutup, status, detail } = req.body;
+    if (!tanggal_buka || !tanggal_tutup || !status || !detail) {
       return res.status(400).json({ msg: "Semua Kolom Harus Terisi" });
     }
-    const guru = await createGuru(nama, jabatan, no_hp, email, mapel);
-    res.status(200).json({ msg: "Data guru Berhasil di masukkan" });
+    const info = await createInfo(tanggal_buka, tanggal_tutup, status, detail);
+    res.status(200).json({ msg: "Data info Berhasil di masukkan" });
   } catch (error) {
-    res.json({ msg: "Data guru Gagal di masukkan" });
+    res.json({ msg: "Data info Gagal di masukkan" });
   }
 };
 
-export const putGuruById = async (req, res) => {
+export const putInfoById = async (req, res) => {
   try {
-    const { nama, jabatan, no_hp, email, mapel } = req.body;
-    if (!nama || !jabatan || !no_hp || !email || !mapel) {
+    const { tanggal_buka, tanggal_tutup, status, detail } = req.body;
+    if (!tanggal_buka || !tanggal_tutup || !status || !detail) {
       return res.status(400).json({ msg: "Semua Kolom Harus Terisi" });
     }
-    await updateGuruById(req.params.id, nama, jabatan, no_hp, email, mapel);
+    await updateInfoById(
+      req.params.id,
+      tanggal_buka,
+      tanggal_tutup,
+      status,
+      detail
+    );
     const respon = await findGuruById(req.params.id);
     if (!respon) {
-      return res.status(404).json({ msg: "data guru tidak ada" });
+      return res.status(404).json({ msg: "data info tidak ada" });
     }
     res.status(200).json({ msg: "Data berhasil di update", data: respon });
   } catch (error) {
-    console.error("Error updating data guru:", error);
+    console.error("Error updating data info:", error);
     res
       .status(500)
-      .json({ msg: "Data guru Gagal di masukkan", error: error.message });
+      .json({ msg: "Data info Gagal di masukkan", error: error.message });
   }
 };

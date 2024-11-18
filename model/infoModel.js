@@ -3,28 +3,25 @@ import db from "../config/database.js";
 
 const { DataTypes } = Sequelize;
 
-const Guru = db.define(
-  "guru",
+const Info = db.define(
+  "info_pendaftaran",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    nama: {
+    tanggal_buka: {
+      type: DataTypes.DATE,
+    },
+    tanggal_tutup: {
+      type: DataTypes.DATE,
+    },
+    status: {
       type: DataTypes.STRING,
     },
-    jabatan: {
-      type: DataTypes.STRING,
-    },
-    no_hp: {
-      type: DataTypes.STRING,
-    },
-    email: {
-      type: DataTypes.STRING,
-    },
-    mapel: {
-      type: DataTypes.STRING,
+    detail: {
+      type: DataTypes.TEXT,
     },
   },
   {
@@ -32,4 +29,4 @@ const Guru = db.define(
   }
 );
 
-export default Guru;
+export default Info;
