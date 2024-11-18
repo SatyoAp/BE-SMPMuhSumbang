@@ -39,7 +39,7 @@ server.use(express.static("public"));
 server.use("/users", router);
 server.use("/pendaftaran", pendaftaranRouter);
 server.use("/kritik", kritikRouter);
-server.use("/info", guruRouter);
+server.use("/info", infoRouter);
 
 server.listen(port, () => {
   console.log(`Server running di port ${port}`);
