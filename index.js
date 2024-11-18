@@ -15,7 +15,7 @@ import { startSequelize } from "./utils/startSequelize.js";
 dotenv.config();
 startSequelize(db);
 
-// const port = process.env.MYSQLPORT;
+const port = process.env.MYSQLPORT;
 
 try {
   await db.authenticate();
@@ -28,10 +28,10 @@ try {
 // server.use(bodyParser.raw());
 // server.use(bodyParser.json());
 
-// server.use(
-//   cors({ credentials: true, origin: "https://be-smp-muh-sumbang.vercel.app" })
-// );
-server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+server.use(
+  cors({ credentials: true, origin: "https://be-smp-muh-sumbang.vercel.app" })
+);
+// server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 server.use(cookieParser());
 server.use(express.json());
 server.use(FileUpload());
@@ -41,6 +41,6 @@ server.use("/pendaftaran", pendaftaranRouter);
 server.use("/kritik", kritikRouter);
 server.use("/guru", guruRouter);
 
-server.listen(3000, () => {
-  console.log(`Server running di port 3000`);
+server.listen(port, () => {
+  console.log(`Server running di port ${port}`);
 });
