@@ -31,9 +31,25 @@ try {
 // server.use(
 //   cors({ credentials: true, origin: "https://be-smp-muh-sumbang.vercel.app" })
 // );
-server.use(cors({ credentials: true, origin: "http://192.168.1.7:5174" }));
-server.use(cors({ credentials: true, origin: "http://192.168.1.7:5173" }));
+// server.use(cors({ credentials: true, origin: "http://192.168.1.7:5174" }));
+// server.use(cors({ credentials: true, origin: "http://192.168.1.7:5173" }));
 // server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+const allowedOrigins = ["http://192.168.1.7:5174", "http://192.168.1.7:5173"];
+
+const corsOptions = {
+  credentials: true,
+  origin: (origin, callback) => {
+    // Cek apakah origin ada dalam daftar yang diizinkan
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true); // Izinkan origin
+    } else {
+      callback(new Error("Not allowed by CORS")); // Tolak origin
+    }
+  },
+};
+
+server.use(cors(corsOptions));
+
 server.use(cookieParser());
 server.use(express.json());
 server.use(FileUpload());
