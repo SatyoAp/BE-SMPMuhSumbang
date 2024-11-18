@@ -59,7 +59,7 @@ export const postInfo = async (req, res) => {
 export const putInfoById = async (req, res) => {
   try {
     const { tanggal_buka, tanggal_tutup, status, detail } = req.body;
-    if (!tanggal_buka || !tanggal_tutup || !status || !detail) {
+    if (!tanggal_buka || !tanggal_tutup || !detail) {
       return res.status(400).json({ msg: "Semua Kolom Harus Terisi" });
     }
     await updateInfoById(
