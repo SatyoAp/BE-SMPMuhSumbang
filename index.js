@@ -1,6 +1,7 @@
 import express from "express";
 import db from "./config/database.js";
 import router from "./routes/Users.js";
+import routerAd from "./routes/Admin.js";
 import pendaftaranRouter from "./routes/Pendaftaran.js";
 import kritikRouter from "./routes/Kritik.js";
 import infoRouter from "./routes/Info.js";
@@ -9,9 +10,10 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import bodyParser from "body-parser";
 import FileUpload from "express-fileupload";
+import path from "path";
 const server = express();
-// import Pendaftaran from "./model/pendaftaranModel.js";
 import { startSequelize } from "./utils/startSequelize.js";
+import routerDok from "./routes/Dokumen.js";
 dotenv.config();
 startSequelize(db);
 
@@ -58,6 +60,8 @@ server.use("/users", router);
 server.use("/pendaftaran", pendaftaranRouter);
 server.use("/kritik", kritikRouter);
 server.use("/info", infoRouter);
+server.use("/admin", routerAd);
+// server.use("/dokumen", routerDok);
 
 server.listen(port, () => {
   console.log(`Server running di port ${port}`);
