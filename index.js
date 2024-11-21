@@ -36,7 +36,7 @@ try {
 // server.use(cors({ credentials: true, origin: "http://192.168.1.7:5174" }));
 // server.use(cors({ credentials: true, origin: "http://192.168.1.7:5173" }));
 // server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
-const allowedOrigins = ["http://192.168.1.7:5174", "http://192.168.1.7:5173"];
+const allowedOrigins = ["http://192.168.1.4:5173", "http://192.168.1.4:5174"];
 
 const corsOptions = {
   credentials: true,
