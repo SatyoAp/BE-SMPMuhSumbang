@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import db from "../config/database.js";
-// import nilai from "./nilaiModel.js";
+import users from "./usersModel.js";
+import admin from "./adminModel.js";
 
 const { DataTypes } = Sequelize;
 
@@ -77,7 +78,9 @@ const Pendaftaran = db.define(
 
 // return pendaftaran;
 
-// nilai.hasOne(Pendaftaran);
-// Pendaftaran.belongsTo(nilai);
+users.hasOne(Pendaftaran);
+Pendaftaran.belongsTo(users);
+admin.hasMany(Pendaftaran, { foreignKey: "adminId" });
+Pendaftaran.belongsTo(admin, { foreignKey: "adminId" });
 
 export default Pendaftaran;

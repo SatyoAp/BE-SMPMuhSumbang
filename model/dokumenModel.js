@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import db from "../config/database.js";
+import pendaftaran from "./pendaftaranModel.js";
 
 const { DataTypes } = Sequelize;
 
@@ -31,5 +32,8 @@ const Dokumen = db.define(
     freezeTableName: true,
   }
 );
+
+pendaftaran.hasOne(Dokumen);
+Dokumen.belongsTo(pendaftaran);
 
 export default Dokumen;

@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import db from "../config/database.js";
+import admin from "./adminModel.js";
 
 const { DataTypes } = Sequelize;
 
@@ -28,5 +29,8 @@ const Info = db.define(
     freezeTableName: true,
   }
 );
+
+admin.hasMany(Info);
+Info.belongsTo(admin);
 
 export default Info;
