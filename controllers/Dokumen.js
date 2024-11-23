@@ -1,8 +1,14 @@
 import Dokumen from "../model/dokumenModel.js";
-import multer from "multer";
 import path from "path";
-import { createDokumen } from "../services/ServDokumen.js";
+import fs from "fs";
+import { fileURLToPath } from "url";
+import { findDokumenById } from "../services/ServDokumen.js";
 
+// Mendefinisikan __filename dan __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Mendefinisikan untuk mengambil seluruh data
 export const getDokumen = async (req, res) => {
   try {
     const dokumen = await Dokumen.findAll();
@@ -12,107 +18,82 @@ export const getDokumen = async (req, res) => {
   }
 };
 
-// export const getInfoById = async (req, res) => {
-//   try {
-//     const info = await findInfoById(req.params.id);
-//     if (!info) {
-//       return res.status(404).json({
-//         message: `data info dengan id : ${req.params.id} tidak ada`,
-//       });
-//     }
-//     res.json(info);
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
+// Fungsi untuk menyimpan data gambar ke database
+export const uploadImages = async (req, res) => {
+  try {
+    const filePaths = {
+      gambar1: req.files.gambar1 ? req.files.gambar1[0].path : null,
+      gambar2: req.files.gambar2 ? req.files.gambar2[0].path : null,
+      gambar3: req.files.gambar3 ? req.files.gambar3[0].path : null,
+      gambar4: req.files.gambar4 ? req.files.gambar4[0].path : null,
+      gambar5: req.files.gambar5 ? req.files.gambar5[0].path : null,
+    };
 
-// export const deleteInfoById = async (req, res, next) => {
-//   try {
-//     await removeInfoById(req.params.id);
-//     res.status(200).json({
-//       message: "Data Berhasil dihapus",
-//     });
-//     res.json({ msg: "Data Berhasil di Hapus" });
-//   } catch (e) {
-//     console.error("Error deleting kritik:", e);
-//     next(e);
-//   }
-// };
+    const upload = await Dokumen.create(filePaths);
 
-// export const postDokumen = async (req, res) => {
-//   try {
-//     const { image1, image2, image3, image4, image5 } = req.body;
-//     if (!image1 || !image2 || !image3 || !image4 || !image5) {
-//       return res.status(400).json({ msg: "Semua Kolom Harus Terisi" });
-//     }
-//     const dokumen = await createDokumen(image1, image2, image3, image4, image5);
-//     res.status(200).json({ msg: "Data Dokumen Berhasil di masukkan" });
-//   } catch (error) {
-//     res.json({ msg: "Data dokumen Gagal di masukkan" });
-//   }
-// };
-
-// Middleware untuk mengupload file
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./public/images/"); // Folder untuk menyimpan file
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Menyimpan file dengan nama unik
-  },
-});
-
-// Fungsi untuk memfilter file
-const fileFilter = (req, file, cb) => {
-  const filetypes = /jpeg|jpg|png/; // Ekstensi yang diizinkan
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = filetypes.test(file.mimetype);
-
-  if (extname && mimetype) {
-    return cb(null, true); // File valid
-  } else {
-    cb(
-      new Error(
-        "Hanya file dengan ekstensi .png, .jpg, dan .jpeg yang diizinkan!"
-      ),
-      false
-    ); // File tidak valid
+    res.status(201).json({
+      message: "Dokumen berhasil di unggah",
+      data: upload,
+    });
+  } catch (error) {
+    console.error(error);
+    console.log(req.files); // Tambahkan ini untuk melihat input file
+    res.status(500).json({ message: "Eror dalam mengunggah gambar", error });
   }
 };
 
-export const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 },
-}).fields([
-  { name: "gambar1" },
-  { name: "gambar2" },
-  { name: "gambar3" },
-  { name: "gambar4" },
-  { name: "gambar5" },
-]);
+// Fungsi untuk menghapus file fisik
+const deleteFile = (filePath) => {
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error(`Error hapus file ${filePath}:`, err);
+    } else {
+      console.log(`File ${filePath} sukses dihapus.`);
+    }
+  });
+};
 
-export const uploadDokumen = async (req, res) => {
-  // Cek jika ada error dari multer
-  if (req.fileValidationError) {
-    return res.status(400).json({ error: req.fileValidationError });
-  }
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).json({ error: "Tidak ada file yang diupload." });
-  }
+// Fungsi untuk menghapus data
+export const deleteData = async (req, res) => {
   try {
-    const dokumen = await createDokumen.createDokumen({
-      gambar1: req.files["gambar1"] ? req.files["gambar1"][0].path : null,
-      gambar2: req.files["gambar2"] ? req.files["gambar2"][0].path : null,
-      gambar3: req.files["gambar3"] ? req.files["gambar3"][0].path : null,
-      gambar4: req.files["gambar4"] ? req.files["gambar4"][0].path : null,
-      gambar5: req.files["gambar5"] ? req.files["gambar5"][0].path : null,
-    });
-    res.status(201).json(dokumen);
+    const id = req.params.id;
+
+    // Cari data berdasarkan ID
+    const upload = await Dokumen.findByPk(id);
+    if (!upload) {
+      return res.status(404).json({ message: "Data not found" });
+    }
+
+    // Hapus file dari folder jika path tersedia
+    if (upload.gambar1) deleteFile(path.join(__dirname, "..", upload.gambar1));
+    if (upload.gambar2) deleteFile(path.join(__dirname, "..", upload.gambar2));
+    if (upload.gambar3) deleteFile(path.join(__dirname, "..", upload.gambar3));
+    if (upload.gambar4) deleteFile(path.join(__dirname, "..", upload.gambar4));
+    if (upload.gambar5) deleteFile(path.join(__dirname, "..", upload.gambar5));
+
+    // Hapus data dari database
+    await upload.destroy();
+
+    res.status(200).json({ message: "Dokumen berhasil di hapus" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: "HAHAHA Eror" });
+    console.error("Eror menghapus data:", error);
+    res.status(500).json({ message: "Eror menghapus data", error });
+  }
+};
+
+// Mendefinisikan untuk mengambil data berdasarkan id
+export const getDokumenById = async (req, res) => {
+  try {
+    const data = await findDokumenById(req.params.id);
+    if (!data) {
+      return res.status(404).json({
+        message: `data dokumen dengan id = ${req.params.id} tidak ada`,
+      });
+    }
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

@@ -8,7 +8,7 @@ import "../model/index.js";
 export const startSequelize = async (sequelize) => {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
     console.log("connection to database successfull");
     console.log(
       `models available in sequelize: ${Object.keys(sequelize.models).join(
