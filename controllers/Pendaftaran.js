@@ -139,8 +139,6 @@ export const putPendaftaranById = async (req, res) => {
     nilai_Bhs_Indonesia,
     nilai_rata_rata,
     status,
-    image,
-    url,
   } = req.body;
   await updatePendaftaranById(
     req.params.id,
@@ -157,9 +155,7 @@ export const putPendaftaranById = async (req, res) => {
     nilai_Matematika,
     nilai_Bhs_Indonesia,
     nilai_rata_rata,
-    status,
-    image,
-    url
+    status
   );
   const daftar = await findPendaftaranById(req.params.id);
   res.json(daftar);
