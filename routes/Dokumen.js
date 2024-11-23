@@ -23,8 +23,24 @@ const storage = multer.diskStorage({
   },
 });
 
+// Filter format file
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /png|jpg|jpeg/; // Format yang diizinkan
+  const extname = allowedTypes.test(
+    path.extname(file.originalname).toLowerCase()
+  ); // Ekstensi
+  const mimetype = allowedTypes.test(file.mimetype); // MIME type
+
+  if (extname && mimetype) {
+    cb(null, true); // Lanjutkan upload
+  } else {
+    cb(new Error("Only .png, .jpg, and .jpeg formats are allowed!")); // Tolak upload
+  }
+};
+
 const upload = multer({
   storage,
+  fileFilter,
   limits: {
     fileSize: 5 * 1024 * 1024, // Batas ukuran file (5MB)
     files: 5, // Batas jumlah file
