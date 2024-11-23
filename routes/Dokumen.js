@@ -21,7 +21,7 @@ routerDok.delete("/delete/:id", deleteData);
 // Konfigurasi Multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../public/images"));
+    cb(null, path.join(__dirname, "/tmp"));
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
