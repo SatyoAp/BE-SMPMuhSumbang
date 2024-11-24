@@ -80,6 +80,6 @@ server.use((err, req, res, next) => {
   return res.status(500).json({ message: err.message });
 });
 
-server.listen(3000, () => {
-  console.log(`Server running di port 3000`);
+server.listen(port, () => {
+  console.log(`Server running di port ${port}`);
 });
