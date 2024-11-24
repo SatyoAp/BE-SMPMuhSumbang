@@ -1,7 +1,8 @@
 import express from "express";
-import multer from "multer";
+// import multer from "multer";
 import path from "path";
 import {
+  upload,
   uploadImages,
   getDokumen,
   deleteData,
@@ -17,40 +18,6 @@ const routerDok = express.Router();
 routerDok.get("/", getDokumen);
 routerDok.get("/:id", getDokumenById);
 routerDok.delete("/delete/:id", deleteData);
-
-// Konfigurasi Multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "./public/images"));
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
-
-// Filter format file
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = /png|jpg|jpeg/; // Format yang diizinkan
-  const extname = allowedTypes.test(
-    path.extname(file.originalname).toLowerCase()
-  ); // Ekstensi
-  const mimetype = allowedTypes.test(file.mimetype); // MIME type
-
-  if (extname && mimetype) {
-    cb(null, true); // Lanjutkan upload
-  } else {
-    cb(new Error("Only .png, .jpg, and .jpeg formats are allowed!")); // Tolak upload
-  }
-};
-
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // Batas ukuran file (5MB)
-    files: 5, // Batas jumlah file
-  },
-});
 
 // Endpoint untuk mengunggah file
 routerDok.post(

@@ -1,6 +1,8 @@
 import Dokumen from "../model/dokumenModel.js";
 import path from "path";
+import multer from "multer";
 import fs from "fs";
+import bucket from "../firebaseConfig.js";
 import { fileURLToPath } from "url";
 import { findDokumenById } from "../services/ServDokumen.js";
 
@@ -18,29 +20,113 @@ export const getDokumen = async (req, res) => {
   }
 };
 
-// Fungsi untuk menyimpan data gambar ke database
+// Konfigurasi Multer
+const storage = multer.memoryStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "./public/images"));
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+// Filter format file
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /png|jpg|jpeg/; // Format yang diizinkan
+  const extname = allowedTypes.test(
+    path.extname(file.originalname).toLowerCase()
+  ); // Ekstensi
+  const mimetype = allowedTypes.test(file.mimetype); // MIME type
+
+  if (extname && mimetype) {
+    cb(null, true); // Lanjutkan upload
+  } else {
+    cb(new Error("Only .png, .jpg, and .jpeg formats are allowed!")); // Tolak upload
+  }
+};
+
+export const upload = multer({
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // Batas ukuran file (5MB)
+    files: 5, // Batas jumlah file
+  },
+});
+
 export const uploadImages = async (req, res) => {
   try {
-    const filePaths = {
-      gambar1: req.files.gambar1 ? req.files.gambar1[0].path : null,
-      gambar2: req.files.gambar2 ? req.files.gambar2[0].path : null,
-      gambar3: req.files.gambar3 ? req.files.gambar3[0].path : null,
-      gambar4: req.files.gambar4 ? req.files.gambar4[0].path : null,
-      gambar5: req.files.gambar5 ? req.files.gambar5[0].path : null,
-    };
+    const fileFields = ["gambar1", "gambar2", "gambar3", "gambar4", "gambar5"];
+    const fileUploads = {};
 
-    const upload = await Dokumen.create(filePaths);
+    // Loop untuk mengunggah setiap gambar ke Firebase Storage
+    for (const field of fileFields) {
+      const file = req.files[field] ? req.files[field][0] : null;
+
+      if (file) {
+        const blob = bucket.file(Date.now() + "-" + file.originalname); // Membuat nama unik untuk file
+        const blobStream = blob.createWriteStream({
+          metadata: {
+            contentType: file.mimetype,
+          },
+        });
+
+        await new Promise((resolve, reject) => {
+          blobStream.on("error", (err) => {
+            console.error(`Error uploading ${field}:`, err);
+            reject(err);
+          });
+
+          blobStream.on("finish", async () => {
+            // URL publik untuk file yang diunggah
+            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+            fileUploads[field] = publicUrl; // Simpan URL ke objek hasil
+            resolve();
+          });
+
+          blobStream.end(file.buffer);
+        });
+      } else {
+        fileUploads[field] = null; // Jika tidak ada file, simpan null
+      }
+    }
+
+    // Simpan URL gambar ke database
+    const upload = await Dokumen.create(fileUploads);
 
     res.status(201).json({
-      message: "Dokumen berhasil di unggah",
+      message: "Dokumen berhasil diunggah",
       data: upload,
     });
   } catch (error) {
     console.error(error);
-    console.log(req.files); // Tambahkan ini untuk melihat input file
     res.status(500).json({ message: "Eror dalam mengunggah gambar", error });
   }
 };
+
+// // Fungsi untuk menyimpan data gambar ke database
+// export const uploadImages = async (req, res) => {
+//   try {
+//     const filePaths = {
+//       gambar1: req.files.gambar1 ? req.files.gambar1[0].path : null,
+//       gambar2: req.files.gambar2 ? req.files.gambar2[0].path : null,
+//       gambar3: req.files.gambar3 ? req.files.gambar3[0].path : null,
+//       gambar4: req.files.gambar4 ? req.files.gambar4[0].path : null,
+//       gambar5: req.files.gambar5 ? req.files.gambar5[0].path : null,
+//     };
+
+//     const upload = await Dokumen.create(filePaths);
+
+//     res.status(201).json({
+//       message: "Dokumen berhasil di unggah",
+//       data: upload,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     console.log(req.files); // Tambahkan ini untuk melihat input file
+//     res.status(500).json({ message: "Eror dalam mengunggah gambar", error });
+//   }
+// };
 
 // Fungsi untuk menghapus file fisik
 const deleteFile = (filePath) => {
