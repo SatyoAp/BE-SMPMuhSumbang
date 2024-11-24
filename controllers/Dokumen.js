@@ -23,7 +23,7 @@ export const getDokumen = async (req, res) => {
 // Konfigurasi Multer
 const storage = multer.memoryStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "./public/images"));
+    cb(null, "./public/images");
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
