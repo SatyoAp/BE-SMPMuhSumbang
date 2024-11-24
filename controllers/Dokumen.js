@@ -57,7 +57,13 @@ export const upload = multer({
 export const uploadImages = async (req, res) => {
   try {
     const fileFields = ["gambar1", "gambar2", "gambar3", "gambar4", "gambar5"];
-    const fileUploads = {};
+    const fileUploads = {
+      gambar1: req.files.gambar1 ? req.files.gambar1[0].path : null,
+      gambar2: req.files.gambar2 ? req.files.gambar2[0].path : null,
+      gambar3: req.files.gambar3 ? req.files.gambar3[0].path : null,
+      gambar4: req.files.gambar4 ? req.files.gambar4[0].path : null,
+      gambar5: req.files.gambar5 ? req.files.gambar5[0].path : null,
+    };
 
     // Loop untuk mengunggah setiap gambar ke Firebase Storage
     for (const field of fileFields) {
