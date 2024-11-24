@@ -1,24 +1,20 @@
 import admin from "firebase-admin";
-// import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
+import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
 import dotenv from "dotenv";
 dotenv.config();
 
-const fireconfig = async (req, res) => {
-  try {
-    const serviceAccountKey = JSON.parse(
-      process.env.FIREBASE_SERVICE_ACCOUNT_KEY
-    );
+// Parse FIREBASE_SERVICE_ACCOUNT_KEY from .env
+console.log(serviceAccount);
+// const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
 
-    // Inisialisasi Firebase
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccountKey),
-      storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    });
+// Initialize Firebase Admin
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET, // Set bucket name in .env
+  });
+}
 
-    const bucket = await admin.storage().bucket();
-    console.log("Firebase Storage bucket initialized:", bucket.name);
-  } catch (error) {
-    console.error("Error parsing service account JSON:", error.message);
-  }
-};
-export default fireconfig;
+const bucket = admin.storage().bucket();
+
+export default { admin, bucket };

@@ -23,7 +23,7 @@ export const getDokumen = async (req, res) => {
 // Konfigurasi Multer
 const storage = multer.memoryStorage({
   destination: (req, file, cb) => {
-    cb(null, "./public/images");
+    cb(null, "public/");
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -54,61 +54,106 @@ export const upload = multer({
   },
 });
 
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// Fungsi untuk mengupload file ke Firebase Storage
+export const uploadFileToFirebase = async (filePath, destination) => {
+  try {
+    await bucket.upload(filePath, {
+      destination: destination, // Path di Firebase Storage
+    });
+    console.log(`File uploaded to Firebase Storage: ${destination}`);
+    return `https://storage.googleapis.com/${bucket.name}/${destination}`;
+  } catch (error) {
+    console.error("Error uploading file to Firebase:", error);
+    throw error;
+  }
+};
+
+// Endpoint untuk mengupload 5 gambar
 export const uploadImages = async (req, res) => {
   try {
-    const fileFields = ["gambar1", "gambar2", "gambar3", "gambar4", "gambar5"];
-    const fileUploads = {
-      gambar1: req.files.gambar1 ? req.files.gambar1[0].path : null,
-      gambar2: req.files.gambar2 ? req.files.gambar2[0].path : null,
-      gambar3: req.files.gambar3 ? req.files.gambar3[0].path : null,
-      gambar4: req.files.gambar4 ? req.files.gambar4[0].path : null,
-      gambar5: req.files.gambar5 ? req.files.gambar5[0].path : null,
-    };
+    // Pastikan file gambar ada di request
+    const images = req.files;
 
-    // Loop untuk mengunggah setiap gambar ke Firebase Storage
-    for (const field of fileFields) {
-      const file = req.files[field] ? req.files[field][0] : null;
+    // Array untuk menyimpan URL file yang berhasil diupload
+    const uploadedUrls = [];
 
-      if (file) {
-        const blob = bucket.file(Date.now() + "-" + file.originalname); // Membuat nama unik untuk file
-        const blobStream = blob.createWriteStream({
-          metadata: {
-            contentType: file.mimetype,
-          },
-        });
-
-        await new Promise((resolve, reject) => {
-          blobStream.on("error", (err) => {
-            console.error(`Error uploading ${field}:`, err);
-            reject(err);
-          });
-
-          blobStream.on("finish", async () => {
-            // URL publik untuk file yang diunggah
-            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-            fileUploads[field] = publicUrl; // Simpan URL ke objek hasil
-            resolve();
-          });
-
-          blobStream.end(file.buffer);
-        });
-      } else {
-        fileUploads[field] = null; // Jika tidak ada file, simpan null
+    // Loop untuk upload semua gambar
+    for (let i = 0; i < 5; i++) {
+      const fieldName = `gambar${i + 1}`;
+      if (images[fieldName]) {
+        const file = images[fieldName][0];
+        const destination = `uploads/${file.filename}`; // Nama file di Firebase Storage
+        const firebaseUrl = await uploadFileToFirebase(file.path, destination);
+        uploadedUrls.push({ [`gambar${i + 1}`]: firebaseUrl });
       }
     }
 
-    // Simpan URL gambar ke database
-    const upload = await Dokumen.create(fileUploads);
-
-    res.status(201).json({
-      message: "Dokumen berhasil diunggah",
-      data: upload,
+    // Response sukses
+    res.status(200).json({
+      message: "Gambar berhasil diupload",
+      data: uploadedUrls,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Eror dalam mengunggah gambar", error });
+    res
+      .status(500)
+      .json({ message: "Error uploading images", error: error.message });
   }
 };
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// export const uploadImages = async (req, res) => {
+//   try {
+//     const fileFields = ["gambar1", "gambar2", "gambar3", "gambar4", "gambar5"];
+//     const fileUploads = {};
+
+//     // Loop untuk mengunggah setiap gambar ke Firebase Storage
+//     for (const field of fileFields) {
+//       const file = req.files[field] ? req.files[field][0] : null;
+
+//       if (file) {
+//         const blob = bucket.file(Date.now() + "-" + file.originalname); // Membuat nama unik untuk file
+//         const blobStream = blob.createWriteStream({
+//           metadata: {
+//             contentType: file.mimetype,
+//           },
+//         });
+
+//         await new Promise((resolve, reject) => {
+//           blobStream.on("error", (err) => {
+//             console.error(`Error uploading ${field}:`, err);
+//             reject(err);
+//           });
+
+//           blobStream.on("finish", async () => {
+//             // URL publik untuk file yang diunggah
+//             const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+//             fileUploads[field] = publicUrl; // Simpan URL ke objek hasil
+//             resolve();
+//           });
+
+//           blobStream.end(file.buffer);
+//         });
+//       } else {
+//         fileUploads[field] = null; // Jika tidak ada file, simpan null
+//       }
+//     }
+
+//     // Simpan URL gambar ke database
+//     const upload = await Dokumen.create(fileUploads);
+
+//     res.status(201).json({
+//       message: "Dokumen berhasil diunggah",
+//       data: upload,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Eror dalam mengunggah gambar", error });
+//   }
+// };
 
 // // Fungsi untuk menyimpan data gambar ke database
 // export const uploadImages = async (req, res) => {
