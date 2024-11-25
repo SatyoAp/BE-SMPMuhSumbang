@@ -18,7 +18,7 @@ routerDok.get("/", getDokumen);
 routerDok.get("/:id", getDokumenById);
 routerDok.delete("/delete/:id", deleteData);
 
-// Endpoint untuk mengunggah file
+// Endpoint untuk mengunggah gambar
 routerDok.post(
   "/upload",
   async (req, res, next) => {
