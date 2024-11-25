@@ -1,8 +1,12 @@
 import Dokumen from "../model/dokumenModel.js";
+import drive from "../config/driveConfig.js";
+
 import path from "path";
 import multer from "multer";
 import fs from "fs";
-import bucket from "../firebaseConfig.js";
+import dotenv from "dotenv";
+dotenv.config();
+
 import { fileURLToPath } from "url";
 import { findDokumenById } from "../services/ServDokumen.js";
 
@@ -23,7 +27,7 @@ export const getDokumen = async (req, res) => {
 // Konfigurasi Multer
 const storage = multer.memoryStorage({
   destination: (req, file, cb) => {
-    cb(null, "public/");
+    cb(null, "public/images");
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -56,52 +60,111 @@ export const upload = multer({
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-// Fungsi untuk mengupload file ke Firebase Storage
-export const uploadFileToFirebase = async (filePath, destination) => {
+const uploadFileToDrive = async (filePath, fileName, mimeType) => {
   try {
-    await bucket.upload(filePath, {
-      destination: destination, // Path di Firebase Storage
+    const fileMetadata = {
+      name: fileName,
+      parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
+    };
+
+    const media = {
+      mimeType,
+      body: fs.createReadStream(filePath),
+    };
+
+    const response = await drive.files.create({
+      requestBody: fileMetadata,
+      media: media,
+      fields: "id, webViewLink",
     });
-    console.log(`File uploaded to Firebase Storage: ${destination}`);
-    return `https://storage.googleapis.com/${bucket.name}/${destination}`;
+
+    return response.data.webViewLink; // URL file di Google Drive
   } catch (error) {
-    console.error("Error uploading file to Firebase:", error);
-    throw error;
+    throw new Error("Gagal mengunggah ke Google Drive: " + error.message);
   }
 };
 
-// Endpoint untuk mengupload 5 gambar
+// Controller untuk upload gambar
 export const uploadImages = async (req, res) => {
   try {
-    // Pastikan file gambar ada di request
-    const images = req.files;
-
-    // Array untuk menyimpan URL file yang berhasil diupload
+    const files = req.files;
     const uploadedUrls = [];
 
-    // Loop untuk upload semua gambar
-    for (let i = 0; i < 5; i++) {
-      const fieldName = `gambar${i + 1}`;
-      if (images[fieldName]) {
-        const file = images[fieldName][0];
-        const destination = `uploads/${file.filename}`; // Nama file di Firebase Storage
-        const firebaseUrl = await uploadFileToFirebase(file.path, destination);
-        uploadedUrls.push({ [`gambar${i + 1}`]: firebaseUrl });
-      }
+    for (const key in files) {
+      const file = files[key][0]; // Hanya mengambil file pertama dari setiap field
+      const filePath = file.path;
+      const fileName = file.originalname;
+      const mimeType = file.mimetype;
+
+      // Upload ke Google Drive
+      const fileUrl = await uploadFileToDrive(filePath, fileName, mimeType);
+
+      // Simpan ke database
+      await File.create({ fileName, fileUrl });
+
+      uploadedUrls.push(fileUrl);
+
+      // Hapus file lokal
+      fs.unlinkSync(filePath);
     }
 
-    // Response sukses
     res.status(200).json({
-      message: "Gambar berhasil diupload",
-      data: uploadedUrls,
+      message: "Gambar berhasil diunggah!",
+      urls: uploadedUrls,
     });
   } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "Error uploading images", error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// // Fungsi untuk mengupload file ke Firebase Storage
+// export const uploadFileToFirebase = async (filePath, destination) => {
+//   try {
+//     await bucket.upload(filePath, {
+//       destination: destination, // Path di Firebase Storage
+//     });
+//     console.log(`File uploaded to Firebase Storage: ${destination}`);
+//     return `https://storage.googleapis.com/${bucket.name}/${destination}`;
+//   } catch (error) {
+//     console.error("Error uploading file to Firebase:", error);
+//     throw error;
+//   }
+// };
+
+// // Endpoint untuk mengupload 5 gambar
+// export const uploadImages = async (req, res) => {
+//   try {
+//     // Pastikan file gambar ada di request
+//     const images = req.files;
+
+//     // Array untuk menyimpan URL file yang berhasil diupload
+//     const uploadedUrls = [];
+
+//     // Loop untuk upload semua gambar
+//     for (let i = 0; i < 5; i++) {
+//       const fieldName = `gambar${i + 1}`;
+//       if (images[fieldName]) {
+//         const file = images[fieldName][0];
+//         const destination = `uploads/${file.filename}`; // Nama file di Firebase Storage
+//         const firebaseUrl = await uploadFileToFirebase(file.path, destination);
+//         uploadedUrls.push({ [`gambar${i + 1}`]: firebaseUrl });
+//       }
+//     }
+
+//     // Response sukses
+//     res.status(200).json({
+//       message: "Gambar berhasil diupload",
+//       data: uploadedUrls,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res
+//       .status(500)
+//       .json({ message: "Error uploading images", error: error.message });
+//   }
+// };
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
