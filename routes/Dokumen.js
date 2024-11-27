@@ -1,7 +1,7 @@
 import express from "express";
+import multer from "multer";
 import path from "path";
 import {
-  upload,
   uploadImages,
   getDokumen,
   deleteData,
@@ -19,25 +19,53 @@ routerDok.get("/:id", getDokumenById);
 routerDok.delete("/delete/:id", deleteData);
 
 // Endpoint untuk mengunggah gambar
-routerDok.post(
-  "/upload",
-  async (req, res, next) => {
-    try {
-      upload.fields([
-        { name: "gambar1", maxCount: 1 },
-        { name: "gambar2", maxCount: 1 },
-        { name: "gambar3", maxCount: 1 },
-        { name: "gambar4", maxCount: 1 },
-        { name: "gambar5", maxCount: 1 },
-      ])(req, res, next);
-    } catch (err) {
-      console.error(err);
-      res
-        .status(500)
-        .json({ message: "Kesalahan saat mengunggah file", error: err });
-    }
+const storage = multer.diskStorage({
+  destination: "uploads/",
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
-  uploadImages
-);
+});
+
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (![".jpg", ".jpeg", ".png"].includes(ext)) {
+      return cb(new Error("Only images are allowed"));
+    }
+    cb(null, true);
+  },
+});
+
+const uploadFields = upload.fields([
+  { name: "gambar1", maxCount: 1 },
+  { name: "gambar2", maxCount: 1 },
+  { name: "gambar3", maxCount: 1 },
+  { name: "gambar4", maxCount: 1 },
+  { name: "gambar5", maxCount: 1 },
+]);
+
+routerDok.post("/upload", uploadFields, uploadImages);
+
+// routerDok.post(
+//   "/upload",
+//   async (req, res, next) => {
+//     try {
+//       upload.fields([
+//         { name: "gambar1", maxCount: 1 },
+//         { name: "gambar2", maxCount: 1 },
+//         { name: "gambar3", maxCount: 1 },
+//         { name: "gambar4", maxCount: 1 },
+//         { name: "gambar5", maxCount: 1 },
+//       ])(req, res, next);
+//     } catch (err) {
+//       console.error(err);
+//       res
+//         .status(500)
+//         .json({ message: "Kesalahan saat mengunggah file", error: err });
+//     }
+//   },
+//   uploadImages
+// );
 
 export default routerDok;

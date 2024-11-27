@@ -1,5 +1,5 @@
 import Dokumen from "../model/dokumenModel.js";
-import drive from "../config/driveConfig.js";
+import { uploadFile } from "../config/driveConfig.js";
 
 import path from "path";
 import multer from "multer";
@@ -24,98 +24,135 @@ export const getDokumen = async (req, res) => {
   }
 };
 
-// Konfigurasi Multer
-const storage = multer.memoryStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/images/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
+// // Konfigurasi Multer
+// const storage = multer.memoryStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "public/images/");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, `${Date.now()}-${file.originalname}`);
+//   },
+// });
 
-// Filter format file
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = /png|jpg|jpeg/; // Format yang diizinkan
-  const extname = allowedTypes.test(
-    path.extname(file.originalname).toLowerCase()
-  ); // Ekstensi
-  const mimetype = allowedTypes.test(file.mimetype); // MIME type
+// // Filter format file
+// const fileFilter = (req, file, cb) => {
+//   const allowedTypes = /png|jpg|jpeg/; // Format yang diizinkan
+//   const extname = allowedTypes.test(
+//     path.extname(file.originalname).toLowerCase()
+//   ); // Ekstensi
+//   const mimetype = allowedTypes.test(file.mimetype); // MIME type
 
-  if (extname && mimetype) {
-    cb(null, true); // Lanjutkan upload
-  } else {
-    cb(new Error("Only .png, .jpg, and .jpeg formats are allowed!")); // Tolak upload
-  }
-};
+//   if (extname && mimetype) {
+//     cb(null, true); // Lanjutkan upload
+//   } else {
+//     cb(new Error("Only .png, .jpg, and .jpeg formats are allowed!")); // Tolak upload
+//   }
+// };
 
-export const upload = multer({
-  storage,
-  fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // Batas ukuran file (5MB)
-    files: 5, // Batas jumlah file
-  },
-});
+// export const upload = multer({
+//   storage,
+//   fileFilter,
+//   limits: {
+//     fileSize: 5 * 1024 * 1024, // Batas ukuran file (5MB)
+//     files: 5, // Batas jumlah file
+//   },
+// });
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-const uploadFileToDrive = async (filePath, fileName, mimeType) => {
-  try {
-    const fileMetadata = {
-      name: fileName,
-      parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
-    };
-
-    const media = {
-      mimeType,
-      body: fs.createReadStream(filePath),
-    };
-
-    const response = await drive.files.create({
-      requestBody: fileMetadata,
-      media: media,
-      fields: "id, webViewLink",
-    });
-
-    return response.data.webViewLink; // URL file di Google Drive
-  } catch (error) {
-    throw new Error("Gagal mengunggah ke Google Drive: " + error.message);
-  }
-};
-
-// Controller untuk upload gambar
 export const uploadImages = async (req, res) => {
+  const { files } = req; // Files dari Multer
+  const { dokumenId } = req.body;
+
+  if (!dokumenId) {
+    return res.status(400).json({ message: "dokumen ID is required" });
+  }
+
   try {
-    const files = req.files;
-    const uploadedUrls = [];
+    const updateData = {};
+    const fileFields = ["gambar1", "gambar2", "gambar3", "gambar4", "gambar5"];
 
-    for (const key in files) {
-      const file = files[key][0]; // Hanya mengambil file pertama dari setiap field
-      const filePath = file.path;
-      const fileName = file.originalname;
-      const mimeType = file.mimetype;
-
-      // Upload ke Google Drive
-      const fileUrl = await uploadFileToDrive(filePath, fileName, mimeType);
-
-      // Simpan ke database
-      await File.create({ fileName, fileUrl });
-
-      uploadedUrls.push(fileUrl);
-
-      // Hapus file lokal
-      fs.unlinkSync(filePath);
+    for (let i = 0; i < fileFields.length; i++) {
+      const fieldName = fileFields[i];
+      if (files[fieldName]) {
+        const file = files[fieldName][0];
+        const fileUrl = await uploadFile(file.path, file.filename);
+        updateData[fieldName] = fileUrl;
+        fs.unlinkSync(file.path); // Hapus file lokal
+      }
     }
 
-    res.status(200).json({
-      message: "Gambar berhasil diunggah!",
-      urls: uploadedUrls,
-    });
+    // Update database
+    await Dokumen.update(updateData, { where: { id: dokumenId } });
+
+    res
+      .status(200)
+      .json({ message: "Images uploaded successfully", data: updateData });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res
+      .status(500)
+      .json({ message: "Error uploading images", error: error.message });
   }
 };
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// const uploadFileToDrive = async (filePath, fileName, mimeType) => {
+//   try {
+//     const fileMetadata = {
+//       name: fileName,
+//       parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
+//     };
+
+//     const media = {
+//       mimeType,
+//       body: fs.createReadStream(filePath),
+//     };
+
+//     const response = await drive.files.create({
+//       requestBody: fileMetadata,
+//       media: media,
+//       fields: "id, webViewLink",
+//     });
+
+//     return response.data.webViewLink; // URL file di Google Drive
+//   } catch (error) {
+//     throw new Error("Gagal mengunggah ke Google Drive: " + error.message);
+//   }
+// };
+
+// // Controller untuk upload gambar
+// export const uploadImages = async (req, res) => {
+//   try {
+//     const files = req.files;
+//     const uploadedUrls = [];
+
+//     for (const key in files) {
+//       const file = files[key][0]; // Hanya mengambil file pertama dari setiap field
+//       const filePath = file.path;
+//       const fileName = file.originalname;
+//       const mimeType = file.mimetype;
+
+//       // Upload ke Google Drive
+//       const fileUrl = await uploadFileToDrive(filePath, fileName, mimeType);
+
+//       // Simpan ke database
+//       await File.create({ fileName, fileUrl });
+
+//       uploadedUrls.push(fileUrl);
+
+//       // Hapus file lokal
+//       fs.unlinkSync(filePath);
+//     }
+
+//     res.status(200).json({
+//       message: "Gambar berhasil diunggah!",
+//       urls: uploadedUrls,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 

@@ -2,16 +2,48 @@ import { google } from "googleapis";
 import dotenv from "dotenv";
 dotenv.config();
 
-const base64Credentials = process.env.GOOGLE_CREDENTIALS_BASE64;
-const credentialsJson = JSON.parse(
-  Buffer.from(base64Credentials, "base64").toString("utf8")
-);
+// Parse kredensial dari variabel lingkungan
+const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
+const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
+
+// Inisialisasi autentikasi Google
 const auth = new google.auth.GoogleAuth({
-  keyFile: credentialsJson,
-  scopes: ["https://www.googleapis.com/auth/drive.file"],
+  credentials,
+  scopes: SCOPES,
 });
 
 const drive = google.drive({ version: "v3", auth });
 
-export default drive;
+/**
+ * Upload file ke Google Drive
+ * @param {string} filePath - Path file lokal
+ * @param {string} fileName - Nama file untuk disimpan di Drive
+ * @returns {string} URL file di Google Drive
+ */
+export const uploadFile = async (filePath, fileName) => {
+  const fileMetadata = { name: fileName };
+  const media = {
+    mimeType: "image/jpeg",
+    body: fs.createReadStream(filePath),
+  };
+
+  const response = await drive.files.create({
+    resource: fileMetadata,
+    media,
+    fields: "id",
+  });
+
+  const fileId = response.data.id;
+
+  // Buat file dapat diakses dengan URL
+  await drive.permissions.create({
+    fileId,
+    requestBody: {
+      role: "reader",
+      type: "anyone",
+    },
+  });
+
+  return `https://drive.google.com/uc?id=${fileId}`;
+};
