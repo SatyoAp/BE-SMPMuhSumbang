@@ -2,6 +2,16 @@ import { google } from "googleapis";
 import dotenv from "dotenv";
 dotenv.config();
 
+// Cek apakah variabel lingkungan terdefinisi
+if (!process.env.GOOGLE_CREDENTIALS) {
+  throw new Error(
+    "GOOGLE_CREDENTIALS is not defined in the environment variables"
+  );
+}
+
+// Cek nilai kredensial
+console.log(process.env.GOOGLE_CREDENTIALS);
+
 // Parse kredensial dari variabel lingkungan
 const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
