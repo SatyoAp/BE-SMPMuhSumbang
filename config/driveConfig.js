@@ -24,7 +24,7 @@ export const uploadFileToDrive = async (file) => {
     },
     media: {
       mimeType: file.mimetype,
-      body: file.buffer,
+      body: file.stream,
     },
   });
 
