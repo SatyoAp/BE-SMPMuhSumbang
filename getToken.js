@@ -6,7 +6,7 @@ dotenv.config();
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_DRIVE_CLIENT_ID, // Client ID dari Google Cloud Console
   process.env.GOOGLE_DRIVE_CLIENT_SECRET, // Client Secret dari Google Cloud Console
-  "http://localhost" // Redirect URI yang Anda tambahkan di Google Cloud Console
+  "https://be-smp-muh-sumbang.vercel.app" // Redirect URI yang Anda tambahkan di Google Cloud Console
 );
 
 // Scope menentukan akses yang diminta
@@ -24,7 +24,7 @@ const getAccessToken = async () => {
     const authUrl = oauth2Client.generateAuthUrl({
       access_type: "offline", // Meminta refresh token untuk akses berkelanjutan
       scope: SCOPES, // Akses Google Drive
-      redirect_uri: "http://localhost",
+      redirect_uri: "https://be-smp-muh-sumbang.vercel.app",
     });
 
     console.log("Authorize this app by visiting this URL:");
