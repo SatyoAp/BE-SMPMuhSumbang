@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import {
-  uploadImages,
+  uploadFiles,
   getDokumen,
   deleteData,
   getDokumenById,
@@ -45,7 +45,7 @@ const uploadFields = upload.fields([
   { name: "gambar5", maxCount: 1 },
 ]);
 
-routerDok.post("/upload", uploadFields, uploadImages);
+routerDok.post("/upload", uploadFields, uploadFiles);
 
 // routerDok.post(
 //   "/upload",
