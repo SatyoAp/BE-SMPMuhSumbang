@@ -19,23 +19,25 @@ routerDok.get("/:id", getDokumenById);
 routerDok.delete("/delete/:id", deleteData);
 
 // Endpoint untuk mengunggah gambar
-const storage = multer.diskStorage({
-  destination: "uploads/",
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: "uploads/",
+//   filename: (req, file, cb) => {
+//     cb(null, `${Date.now()}-${file.originalname}`);
+//   },
+// });
 
-const upload = multer({
-  storage,
-  fileFilter: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    if (![".jpg", ".jpeg", ".png"].includes(ext)) {
-      return cb(new Error("Only images are allowed"));
-    }
-    cb(null, true);
-  },
-});
+// const upload = multer({
+//   storage,
+//   fileFilter: (req, file, cb) => {
+//     const ext = path.extname(file.originalname).toLowerCase();
+//     if (![".jpg", ".jpeg", ".png"].includes(ext)) {
+//       return cb(new Error("Only images are allowed"));
+//     }
+//     cb(null, true);
+//   },
+// });
+
+const upload = multer();
 
 const uploadFields = upload.fields([
   { name: "gambar1", maxCount: 1 },
