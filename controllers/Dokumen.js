@@ -59,26 +59,38 @@ export const getDokumen = async (req, res) => {
 // });
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
 export const uploadFiles = async (req, res) => {
   try {
     const uploadedFiles = {};
+
+    // Loop untuk mengecek dan mengupload gambar 1-5
     for (let i = 1; i <= 5; i++) {
       const fileField = `gambar${i}`;
-      if (!req.files[fileField]) {
+
+      // Pastikan file untuk setiap field ada
+      if (
+        !req.files ||
+        !req.files[fileField] ||
+        req.files[fileField].length === 0
+      ) {
         return res.status(400).json({ error: `${fileField} is required` });
       }
+
+      // Upload file ke Google Drive dan simpan URL-nya
       uploadedFiles[fileField] = await uploadFileToDrive(
         req.files[fileField][0]
       );
     }
 
+    // Simpan informasi file yang diupload ke database (misalnya MySQL dengan Sequelize)
     const savedRecord = await File.create(uploadedFiles);
+
+    // Kirimkan respons sukses dengan data yang sudah disimpan
     res
       .status(201)
       .json({ message: "Files uploaded successfully", data: savedRecord });
   } catch (error) {
-    console.error(error);
+    console.error("Error uploading files:", error);
     res.status(500).json({ error: "An error occurred while uploading files" });
   }
 };

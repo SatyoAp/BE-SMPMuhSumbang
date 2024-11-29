@@ -37,7 +37,8 @@ routerDok.delete("/delete/:id", deleteData);
 //   },
 // });
 
-const upload = multer();
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 const uploadFields = upload.fields([
   { name: "gambar1", maxCount: 1 },
