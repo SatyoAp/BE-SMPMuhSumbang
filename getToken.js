@@ -25,6 +25,7 @@ const getAccessToken = async () => {
       access_type: "offline", // Meminta refresh token untuk akses berkelanjutan
       scope: SCOPES, // Akses Google Drive
       redirect_uri: "http://localhost",
+      response_type: code,
     });
 
     console.log("Authorize this app by visiting this URL:");
