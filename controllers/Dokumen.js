@@ -1,5 +1,5 @@
 import Dokumen from "../model/dokumenModel.js";
-import { uploadFile } from "../config/driveConfig.js";
+import { uploadFileToDrive } from "../config/driveConfig.js";
 
 import path from "path";
 import multer from "multer";
@@ -60,40 +60,65 @@ export const getDokumen = async (req, res) => {
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-export const uploadImages = async (req, res) => {
-  const { files } = req; // Files dari Multer
-  const { dokumenId } = req.body;
-
-  if (!dokumenId) {
-    return res.status(400).json({ message: "dokumen ID is required" });
-  }
-
+export const uploadFiles = async (req, res) => {
   try {
-    const updateData = {};
-    const fileFields = ["gambar1", "gambar2", "gambar3", "gambar4", "gambar5"];
-
-    for (let i = 0; i < fileFields.length; i++) {
-      const fieldName = fileFields[i];
-      if (files[fieldName]) {
-        const file = files[fieldName][0];
-        const fileUrl = await uploadFile(file.path, file.filename);
-        updateData[fieldName] = fileUrl;
-        fs.unlinkSync(file.path); // Hapus file lokal
+    const uploadedFiles = {};
+    for (let i = 1; i <= 5; i++) {
+      const fileField = `gambar${i}`;
+      if (!req.files[fileField]) {
+        return res.status(400).json({ error: `${fileField} is required` });
       }
+      uploadedFiles[fileField] = await uploadFileToDrive(
+        req.files[fileField][0]
+      );
     }
 
-    // Update database
-    await Dokumen.update(updateData, { where: { id: dokumenId } });
-
+    const savedRecord = await File.create(uploadedFiles);
     res
-      .status(200)
-      .json({ message: "Images uploaded successfully", data: updateData });
+      .status(201)
+      .json({ message: "Files uploaded successfully", data: savedRecord });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error uploading images", error: error.message });
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while uploading files" });
   }
 };
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// export const uploadImages = async (req, res) => {
+//   const { files } = req; // Files dari Multer
+//   const { dokumenId } = req.body;
+
+//   if (!dokumenId) {
+//     return res.status(400).json({ message: "dokumen ID is required" });
+//   }
+
+//   try {
+//     const updateData = {};
+//     const fileFields = ["gambar1", "gambar2", "gambar3", "gambar4", "gambar5"];
+
+//     for (let i = 0; i < fileFields.length; i++) {
+//       const fieldName = fileFields[i];
+//       if (files[fieldName]) {
+//         const file = files[fieldName][0];
+//         const fileUrl = await uploadFile(file.path, file.filename);
+//         updateData[fieldName] = fileUrl;
+//         fs.unlinkSync(file.path); // Hapus file lokal
+//       }
+//     }
+
+//     // Update database
+//     await Dokumen.update(updateData, { where: { id: dokumenId } });
+
+//     res
+//       .status(200)
+//       .json({ message: "Images uploaded successfully", data: updateData });
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: "Error uploading images", error: error.message });
+//   }
+// };
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 

@@ -2,58 +2,40 @@ import { google } from "googleapis";
 import dotenv from "dotenv";
 dotenv.config();
 
-// Cek apakah variabel lingkungan terdefinisi
-if (!process.env.GOOGLE_CREDENTIALS) {
-  throw new Error(
-    "GOOGLE_CREDENTIALS is not defined in the environment variables"
-  );
-}
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_DRIVE_CLIENT_ID,
+  process.env.GOOGLE_DRIVE_CLIENT_SECRET
+);
 
-// Cek nilai kredensial
-console.log(process.env.GOOGLE_CREDENTIALS);
-
-// Parse kredensial dari variabel lingkungan
-const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
-
-const SCOPES = ["https://www.googleapis.com/auth/drive.file"];
-
-// Inisialisasi autentikasi Google
-const auth = new google.auth.GoogleAuth({
-  credentials,
-  scopes: SCOPES,
+oauth2Client.setCredentials({
+  refresh_token: process.env.GOOGLE_DRIVE_REFRESH_TOKEN,
 });
 
-const drive = google.drive({ version: "v3", auth });
+const drive = google.drive({
+  version: "v3",
+  auth: oauth2Client,
+});
 
-/**
- * Upload file ke Google Drive
- * @param {string} filePath - Path file lokal
- * @param {string} fileName - Nama file untuk disimpan di Drive
- * @returns {string} URL file di Google Drive
- */
-export const uploadFile = async (filePath, fileName) => {
-  const fileMetadata = { name: fileName };
-  const media = {
-    mimeType: "image/jpeg",
-    body: fs.createReadStream(filePath),
-  };
-
+export const uploadFileToDrive = async (file) => {
   const response = await drive.files.create({
-    resource: fileMetadata,
-    media,
-    fields: "id",
+    requestBody: {
+      name: file.originalname,
+      parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
+    },
+    media: {
+      mimeType: file.mimetype,
+      body: file.buffer,
+    },
   });
 
-  const fileId = response.data.id;
-
-  // Buat file dapat diakses dengan URL
+  // Make file public
   await drive.permissions.create({
-    fileId,
+    fileId: response.data.id,
     requestBody: {
       role: "reader",
       type: "anyone",
     },
   });
 
-  return `https://drive.google.com/uc?id=${fileId}`;
+  return `https://drive.google.com/uc?id=${response.data.id}`;
 };
