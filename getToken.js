@@ -1,5 +1,7 @@
 import { google } from "googleapis";
 import readline from "readline";
+import dotenv from "dotenv";
+dotenv.config();
 // Ganti dengan Client ID, Client Secret, dan Redirect URI Anda
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_DRIVE_CLIENT_ID, // Client ID dari Google Cloud Console
