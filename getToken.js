@@ -24,7 +24,7 @@ const getAccessToken = async () => {
     const authUrl = oauth2Client.generateAuthUrl({
       access_type: "offline", // Meminta refresh token untuk akses berkelanjutan
       scope: SCOPES, // Akses Google Drive
-      // redirect_uri: "https://be-smp-muh-sumbang.vercel.app",
+      redirect_uri: "https://be-smp-muh-sumbang.vercel.app/oauth2callback",
     });
 
     console.log("Authorize this app by visiting this URL:");
