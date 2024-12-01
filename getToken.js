@@ -6,7 +6,8 @@ dotenv.config();
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_DRIVE_CLIENT_ID, // Client ID dari Google Cloud Console
   process.env.GOOGLE_DRIVE_CLIENT_SECRET, // Client Secret dari Google Cloud Console
-  "https://be-smp-muh-sumbang.vercel.app" // Redirect URI yang Anda tambahkan di Google Cloud Console
+  // "https://be-smp-muh-sumbang.vercel.app" // Redirect URI yang Anda tambahkan di Google Cloud Console
+  "http://localhost" // Redirect URI yang Anda tambahkan di Google Cloud Console
 );
 
 // Scope menentukan akses yang diminta
