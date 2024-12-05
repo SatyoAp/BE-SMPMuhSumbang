@@ -1,5 +1,5 @@
-import Dokumen from "../model/dokumenModel.js";
-import { uploadFileToDrive } from "../config/driveConfig.js";
+import Image from "../model/dokumenModel.js";
+import uploadToDrive from "../config/driveConfig.js";
 
 import path from "path";
 import multer from "multer";
@@ -7,22 +7,49 @@ import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
 
-import { fileURLToPath } from "url";
-import { findDokumenById } from "../services/ServDokumen.js";
+// import { fileURLToPath } from "url";
+// import { findDokumenById } from "../services/ServDokumen.js";
 
-// Mendefinisikan __filename dan __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// // Mendefinisikan __filename dan __dirname
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 // Mendefinisikan untuk mengambil seluruh data
 export const getDokumen = async (req, res) => {
   try {
-    const dokumen = await Dokumen.findAll();
+    const dokumen = await Image.findAll();
     res.json(dokumen);
   } catch (error) {
     console.log(error);
   }
 };
+
+export const uploadController = async (req, res) => {
+  try {
+    const files = req.files;
+
+    if (!files || Object.keys(files).length !== 5) {
+      return res.status(400).json({ message: "All 5 images are required" });
+    }
+
+    const uploadedUrls = {};
+
+    for (const key of Object.keys(files)) {
+      const file = files[key][0];
+      const driveFile = await uploadToDrive(file.path, file.originalname);
+      uploadedUrls[key] = driveFile.webViewLink;
+    }
+
+    const imageRecord = await Image.create(uploadedUrls);
+    res
+      .status(201)
+      .json({ message: "Images uploaded successfully", data: imageRecord });
+  } catch (error) {
+    res.status(500).json({ message: "Upload failed", error: error.message });
+  }
+};
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
 
 // // Konfigurasi Multer
 // const storage = multer.memoryStorage({
@@ -90,7 +117,8 @@ export const uploadFiles = async (req, res) => {
       .status(201)
       .json({ message: "Files uploaded successfully", data: savedRecord });
   } catch (error) {
-    console.error("Error uploading files:", error);
+    // console.error("Error uploading files:", error);
+    console.error("Upload error:", error.message);
     res.status(500).json({ error: "An error occurred while uploading files" });
   }
 };

@@ -1,6 +1,6 @@
 import express from "express";
 import db from "./config/database.js";
-import cookieParser from "cookie-parser";
+// import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -16,10 +16,10 @@ import routerDok from "./routes/Dokumen.js";
 
 import { fileURLToPath } from "url";
 import { startSequelize } from "./utils/startSequelize.js";
-
-const server = express();
 dotenv.config();
 startSequelize(db);
+
+const server = express();
 // Mendefinisikan __filename dan __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,7 +36,6 @@ try {
 // server.use(bodyParser.urlencoded({ extended: false }));
 // server.use(bodyParser.raw());
 server.use(bodyParser.json());
-
 server.use(
   cors({ credentials: true, origin: "https://be-smp-muh-sumbang.vercel.app" })
 );
@@ -57,12 +56,11 @@ server.use(
 // };
 
 // server.use(cors(corsOptions));
-
-server.use(cookieParser());
-server.use(express.json());
+// server.use(cookieParser());
 // server.use(FileUpload());
-server.use(express.static("uploads"));
+// server.use(express.static("uploads"));
 // server.use("/uploads", express.static(path.join(__dirname, "uploads")));
+server.use(express.json());
 server.use("/users", router);
 server.use("/pendaftaran", pendaftaranRouter);
 server.use("/kritik", kritikRouter);
@@ -70,15 +68,15 @@ server.use("/info", infoRouter);
 server.use("/admin", routerAd);
 server.use("/dokumen", routerDok);
 
-server.use((err, req, res, next) => {
-  if (err.code === "LIMIT_FILE_SIZE") {
-    return res.status(400).json({ message: "File size is too large" });
-  }
-  if (err.code === "LIMIT_UNEXPECTED_FILE") {
-    return res.status(400).json({ message: "Too many files to upload" });
-  }
-  return res.status(500).json({ message: err.message });
-});
+// server.use((err, req, res, next) => {
+//   if (err.code === "LIMIT_FILE_SIZE") {
+//     return res.status(400).json({ message: "File size is too large" });
+//   }
+//   if (err.code === "LIMIT_UNEXPECTED_FILE") {
+//     return res.status(400).json({ message: "Too many files to upload" });
+//   }
+//   return res.status(500).json({ message: err.message });
+// });
 
 server.listen(port, () => {
   console.log(`Server running di port ${port}`);
