@@ -7,11 +7,11 @@ import {
   deleteData,
   getDokumenById,
 } from "../controllers/Dokumen.js";
-// import { fileURLToPath } from "url";
+import { fileURLToPath } from "url";
 
 // // Mendefinisikan __filename dan __dirname
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const routerDok = express.Router();
 routerDok.get("/", getDokumen);
@@ -74,7 +74,14 @@ routerDok.delete("/delete/:id", deleteData);
 // export default routerDok;
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads"),
+  // destination: (req, file, cb) => cb(null, "uploads"),
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, "uploads");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir); // Buat folder jika belum ada
+    }
+    cb(null, uploadDir); // Tentukan folder penyimpanan
+  },
   filename: (req, file, cb) =>
     cb(null, Date.now() + path.extname(file.originalname)),
 });
