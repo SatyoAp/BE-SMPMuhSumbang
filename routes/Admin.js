@@ -7,7 +7,7 @@ import {
   getAdminById,
 } from "../controllers/Admin.js";
 import { verifyToken } from "../middleware/Token.js";
-import { refreshToken } from "../controllers/RefreshToken.js";
+import { refreshToken } from "../controllers/RefreshTokenAdmin.js";
 
 const routerAd = express.Router();
 routerAd.get("/", getAdmin);
