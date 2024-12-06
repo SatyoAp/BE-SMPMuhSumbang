@@ -46,6 +46,8 @@ export const postPendaftaran = async (req, res) => {
     nilai_rata_rata,
     status,
   } = req.body;
+  // new
+  const userId = req.user.id;
   try {
     await Pendaftaran.create({
       nama: nama,
@@ -62,6 +64,8 @@ export const postPendaftaran = async (req, res) => {
       nilai_Bhs_Indonesia: nilai_Bhs_Indonesia,
       nilai_rata_rata: nilai_rata_rata,
       status: status,
+      // new
+      userId: userId,
       // image: fileName,
       // url: Url,
     });

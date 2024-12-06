@@ -55,6 +55,10 @@ const Pendaftaran = db.define(
     status: {
       type: DataTypes.STRING,
     },
+    // new
+    userId: {
+      type: DataTypes.INTEGER,
+    },
     // image: {
     //   type: DataTypes.STRING,
     // },
