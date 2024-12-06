@@ -75,15 +75,15 @@ routerDok.delete("/delete/:id", deleteData);
 // export default routerDok;
 
 const storage = multer.diskStorage({
-  // destination: (req, file, cb) => cb(null, "uploads"),
-  // destination: function (req, file, cb) {
-  //   const uploadDir = path.join(__dirname, "uploads");
-  //   if (!fs.existsSync(uploadDir)) {
-  //     fs.mkdirSync(uploadDir); // Buat folder jika belum ada
-  //   }
-  //   cb(null, uploadDir); // Tentukan folder penyimpanan
-  // },
   destination: (req, file, cb) => cb(null, "uploads"),
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, "uploads");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir); // Buat folder jika belum ada
+    }
+    cb(null, uploadDir); // Tentukan folder penyimpanan
+  },
+  // destination: (req, file, cb) => cb(null, "uploads"),
   filename: (req, file, cb) =>
     cb(null, Date.now() + path.extname(file.originalname)),
 });
