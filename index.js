@@ -36,10 +36,10 @@ try {
 // server.use(bodyParser.urlencoded({ extended: false }));
 // server.use(bodyParser.raw());
 server.use(bodyParser.json());
-server.use(
-  cors({ credentials: true, origin: "https://be-smp-muh-sumbang.vercel.app" })
-);
-server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+// server.use(
+//   cors({ credentials: true, origin: "https://be-smp-muh-sumbang.vercel.app" })
+// );
+// server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 const allowedOrigins = ["http://192.168.1.7:5173"];
 
