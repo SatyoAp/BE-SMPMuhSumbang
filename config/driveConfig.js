@@ -48,35 +48,42 @@ import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
 
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET
-);
+// const oauth2Client = new google.auth.OAuth2(
+//   process.env.GOOGLE_CLIENT_ID,
+//   process.env.GOOGLE_CLIENT_SECRET
+// );
 
-oauth2Client.setCredentials({
-  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+// oauth2Client.setCredentials({
+//   refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+// });
+
+// const drive = google.drive({ version: "v3", auth: oauth2Client });
+
+export const auth = new google.auth.GoogleAuth({
+  keyFile: process.env.GOOGLE_KEYFILE,
+  scopes: ["https://www.googleapis.com/auth/drive"],
 });
 
-const drive = google.drive({ version: "v3", auth: oauth2Client });
+const drive = google.drive({ version: "v3", auth });
 
-const uploadToDrive = async (filePath, fileName) => {
-  const fileMetadata = {
-    name: fileName,
-    parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
-  };
+// const uploadToDrive = async (filePath, fileName) => {
+//   const fileMetadata = {
+//     name: fileName,
+//     parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
+//   };
 
-  const media = {
-    mimeType: "image/jpeg",
-    body: fs.createReadStream(filePath),
-  };
+//   const media = {
+//     mimeType: "image/jpeg",
+//     body: fs.createReadStream(filePath),
+//   };
 
-  const response = await drive.files.create({
-    resource: fileMetadata,
-    media: media,
-    fields: "id, webViewLink",
-  });
+//   const response = await drive.files.create({
+//     resource: fileMetadata,
+//     media: media,
+//     fields: "id, webViewLink",
+//   });
 
-  return response.data;
-};
+//   return response.data;
+// };
 
-export default uploadToDrive;
+// export default uploadToDrive;
