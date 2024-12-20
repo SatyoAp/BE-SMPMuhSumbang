@@ -94,7 +94,14 @@ export const Login = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
       secure: true,
     });
-    res.json({ accessToken });
+    res.json({
+      accessToken,
+      user: {
+        id: user.userId,
+        name: user.name,
+        email: user.email,
+      },
+    });
   } catch (error) {
     res.status(404).json({ msg: "Email Salah...!!" });
   }
