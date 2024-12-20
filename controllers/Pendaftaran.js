@@ -1,5 +1,4 @@
 import Pendaftaran from "../model/pendaftaranModel.js";
-import Users from "../model/usersModel.js";
 import {
   findPendaftaranById,
   removePendaftaranById,
@@ -45,14 +44,9 @@ export const postPendaftaran = async (req, res) => {
     nilai_Matematika,
     nilai_Bhs_Indonesia,
     nilai_rata_rata,
-    status,
   } = req.body;
   // new
-  const user = await Users.findOne({ where: { email } });
-  if (!user) {
-    return res.status(404).json({ message: "User tidak ditemukan" });
-  }
-  const userId = user.id;
+  const userId = req.user.id;
   try {
     await Pendaftaran.create({
       nama: nama,
@@ -68,7 +62,6 @@ export const postPendaftaran = async (req, res) => {
       nilai_Matematika: nilai_Matematika,
       nilai_Bhs_Indonesia: nilai_Bhs_Indonesia,
       nilai_rata_rata: nilai_rata_rata,
-      status: status,
       // new
       userId: userId,
       // image: fileName,
