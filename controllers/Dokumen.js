@@ -1,4 +1,4 @@
-import Image from "../model/dokumenModel.js";
+import Dokumen from "../model/dokumenModel.js";
 import uploadToDrive from "../config/driveConfig.js";
 
 import path from "path";
@@ -17,37 +17,104 @@ dotenv.config();
 // Mendefinisikan untuk mengambil seluruh data
 export const getDokumen = async (req, res) => {
   try {
-    const dokumen = await Image.findAll();
+    const dokumen = await Dokumen.findAll();
     res.json(dokumen);
   } catch (error) {
     console.log(error);
   }
 };
 
-export const uploadController = async (req, res) => {
-  try {
-    const files = req.files;
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+    if (!allowedTypes.includes(file.mimetype)) {
+      return cb(new Error("Only .png, .jpg and .jpeg files are allowed!"));
+    }
+    cb(null, true);
+  },
+}).fields([
+  { name: "gambar1", maxCount: 1 },
+  { name: "gambar2", maxCount: 1 },
+  { name: "gambar3", maxCount: 1 },
+  { name: "gambar4", maxCount: 1 },
+  { name: "gambar5", maxCount: 1 },
+]);
 
-    if (!files || Object.keys(files).length !== 5) {
-      return res.status(400).json({ message: "All 5 images are required" });
+async function uploadToDrive(fileBuffer, fileName) {
+  const fileMetadata = {
+    name: fileName,
+    parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
+  };
+  const media = { mimeType: "image/jpeg", body: fileBuffer };
+  const response = await drive.files.create({
+    requestBody: fileMetadata,
+    media,
+    fields: "id",
+  });
+  return `https://drive.google.com/uc?id=${response.data.id}`;
+}
+
+export const uploadImages = async (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
     }
 
-    const uploadedUrls = {};
+    try {
+      const files = req.files;
+      const uploadedFiles = {};
 
-    for (const key of Object.keys(files)) {
-      const file = files[key][0];
-      const driveFile = await uploadToDrive(file.path, file.originalname);
-      uploadedUrls[key] = driveFile.webViewLink;
+      for (const [fieldName, fileArray] of Object.entries(files)) {
+        const file = fileArray[0];
+        const driveUrl = await uploadToDrive(file.buffer, file.originalname);
+        uploadedFiles[fieldName] = driveUrl;
+      }
+
+      const uploadedEntry = await Dokumen.create({
+        gambar1: uploadedFiles.gambar1 || null,
+        gambar2: uploadedFiles.gambar2 || null,
+        gambar3: uploadedFiles.gambar3 || null,
+        gambar4: uploadedFiles.gambar4 || null,
+        gambar5: uploadedFiles.gambar5 || null,
+      });
+
+      res.status(200).json({
+        message: "Files uploaded successfully",
+        uploadedEntry,
+      });
+    } catch (uploadError) {
+      res.status(500).json({ message: uploadError.message });
     }
-
-    const imageRecord = await Image.create(uploadedUrls);
-    res
-      .status(201)
-      .json({ message: "Images uploaded successfully", data: imageRecord });
-  } catch (error) {
-    res.status(500).json({ message: "Upload failed", error: error.message });
-  }
+  });
 };
+
+// export const uploadController = async (req, res) => {
+//   try {
+//     const files = req.files;
+
+//     if (!files || Object.keys(files).length !== 5) {
+//       return res.status(400).json({ message: "All 5 images are required" });
+//     }
+
+//     const uploadedUrls = {};
+
+//     for (const key of Object.keys(files)) {
+//       const file = files[key][0];
+//       const driveFile = await uploadToDrive(file.path, file.originalname);
+//       uploadedUrls[key] = driveFile.webViewLink;
+//     }
+
+//     const imageRecord = await Image.create(uploadedUrls);
+//     res
+//       .status(201)
+//       .json({ message: "Images uploaded successfully", data: imageRecord });
+//   } catch (error) {
+//     res.status(500).json({ message: "Upload failed", error: error.message });
+//   }
+// };
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
 
@@ -85,43 +152,44 @@ export const uploadController = async (req, res) => {
 //   },
 // });
 
+// TERBARU
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-export const uploadFiles = async (req, res) => {
-  try {
-    const uploadedFiles = {};
+// export const uploadFiles = async (req, res) => {
+//   try {
+//     const uploadedFiles = {};
 
-    // Loop untuk mengecek dan mengupload gambar 1-5
-    for (let i = 1; i <= 5; i++) {
-      const fileField = `gambar${i}`;
+//     // Loop untuk mengecek dan mengupload gambar 1-5
+//     for (let i = 1; i <= 5; i++) {
+//       const fileField = `gambar${i}`;
 
-      // Pastikan file untuk setiap field ada
-      if (
-        !req.files ||
-        !req.files[fileField] ||
-        req.files[fileField].length === 0
-      ) {
-        return res.status(400).json({ error: `${fileField} is required` });
-      }
+//       // Pastikan file untuk setiap field ada
+//       if (
+//         !req.files ||
+//         !req.files[fileField] ||
+//         req.files[fileField].length === 0
+//       ) {
+//         return res.status(400).json({ error: `${fileField} is required` });
+//       }
 
-      // Upload file ke Google Drive dan simpan URL-nya
-      uploadedFiles[fileField] = await uploadFileToDrive(
-        req.files[fileField][0]
-      );
-    }
+//       // Upload file ke Google Drive dan simpan URL-nya
+//       uploadedFiles[fileField] = await uploadFileToDrive(
+//         req.files[fileField][0]
+//       );
+//     }
 
-    // Simpan informasi file yang diupload ke database (misalnya MySQL dengan Sequelize)
-    const savedRecord = await File.create(uploadedFiles);
+//     // Simpan informasi file yang diupload ke database (misalnya MySQL dengan Sequelize)
+//     const savedRecord = await File.create(uploadedFiles);
 
-    // Kirimkan respons sukses dengan data yang sudah disimpan
-    res
-      .status(201)
-      .json({ message: "Files uploaded successfully", data: savedRecord });
-  } catch (error) {
-    // console.error("Error uploading files:", error);
-    console.error("Upload error:", error.message);
-    res.status(500).json({ error: "An error occurred while uploading files" });
-  }
-};
+//     // Kirimkan respons sukses dengan data yang sudah disimpan
+//     res
+//       .status(201)
+//       .json({ message: "Files uploaded successfully", data: savedRecord });
+//   } catch (error) {
+//     // console.error("Error uploading files:", error);
+//     console.error("Upload error:", error.message);
+//     res.status(500).json({ error: "An error occurred while uploading files" });
+//   }
+// };
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>---------<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
