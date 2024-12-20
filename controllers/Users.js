@@ -74,26 +74,26 @@ export const Login = async (req, res) => {
         expiresIn: "1d",
       }
     );
-    const refreshToken = jwt.sign(
-      { userId, name, email },
-      process.env.REFRESH_TOKEN_SECRET,
-      {
-        expiresIn: "1d",
-      }
-    );
-    await Users.update(
-      { refresh_token: refreshToken },
-      {
-        where: {
-          id: userId,
-        },
-      }
-    );
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
-      secure: true,
-    });
+    // const refreshToken = jwt.sign(
+    //   { userId, name, email },
+    //   process.env.REFRESH_TOKEN_SECRET,
+    //   {
+    //     expiresIn: "1d",
+    //   }
+    // );
+    // await Users.update(
+    //   { refresh_token: refreshToken },
+    //   {
+    //     where: {
+    //       id: userId,
+    //     },
+    //   }
+    // );
+    // res.cookie("refreshToken", refreshToken, {
+    //   httpOnly: true,
+    //   maxAge: 24 * 60 * 60 * 1000,
+    //   secure: true,
+    // });
     res.json({
       accessToken,
       user: {
