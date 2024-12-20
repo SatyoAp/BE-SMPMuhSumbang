@@ -48,23 +48,24 @@ import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
 
-// const oauth2Client = new google.auth.OAuth2(
-//   process.env.GOOGLE_CLIENT_ID,
-//   process.env.GOOGLE_CLIENT_SECRET
-// );
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET
+);
 
-// oauth2Client.setCredentials({
-//   refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-// });
-
-// const drive = google.drive({ version: "v3", auth: oauth2Client });
-
-export const auth = new google.auth.GoogleAuth({
-  keyFile: process.env.GOOGLE_KEYFILE,
-  scopes: ["https://www.googleapis.com/auth/drive"],
+oauth2Client.setCredentials({
+  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
 });
 
-const drive = google.drive({ version: "v3", auth });
+const drive = google.drive({ version: "v3", auth: oauth2Client });
+
+export default drive;
+// const auth = new google.auth.GoogleAuth({
+//   keyFile: process.env.GOOGLE_KEYFILE,
+//   scopes: ["https://www.googleapis.com/auth/drive"],
+// });
+
+// export const drive = google.drive({ version: "v3", auth });
 
 // const uploadToDrive = async (filePath, fileName) => {
 //   const fileMetadata = {

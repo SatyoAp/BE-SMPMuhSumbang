@@ -3,7 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import {
-  uploadController,
+  uploadImages,
   getDokumen,
   deleteData,
   getDokumenById,
@@ -74,41 +74,41 @@ routerDok.delete("/delete/:id", deleteData);
 
 // export default routerDok;
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads"),
-  destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, "uploads");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir); // Buat folder jika belum ada
-    }
-    cb(null, uploadDir); // Tentukan folder penyimpanan
-  },
-  // destination: (req, file, cb) => cb(null, "uploads"),
-  filename: (req, file, cb) =>
-    cb(null, Date.now() + path.extname(file.originalname)),
-});
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => cb(null, "uploads"),
+//   destination: function (req, file, cb) {
+//     const uploadDir = path.join(__dirname, "uploads");
+//     if (!fs.existsSync(uploadDir)) {
+//       fs.mkdirSync(uploadDir); // Buat folder jika belum ada
+//     }
+//     cb(null, uploadDir); // Tentukan folder penyimpanan
+//   },
+//   // destination: (req, file, cb) => cb(null, "uploads"),
+//   filename: (req, file, cb) =>
+//     cb(null, Date.now() + path.extname(file.originalname)),
+// });
 
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/png", "image/jpg", "image/jpeg"];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Invalid file type. Only .png, .jpg, and .jpeg are allowed."));
-  }
-};
+// const fileFilter = (req, file, cb) => {
+//   const allowedTypes = ["image/png", "image/jpg", "image/jpeg"];
+//   if (allowedTypes.includes(file.mimetype)) {
+//     cb(null, true);
+//   } else {
+//     cb(new Error("Invalid file type. Only .png, .jpg, and .jpeg are allowed."));
+//   }
+// };
 
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
-}).fields([
-  { name: "gambar1", maxCount: 1 },
-  { name: "gambar2", maxCount: 1 },
-  { name: "gambar3", maxCount: 1 },
-  { name: "gambar4", maxCount: 1 },
-  { name: "gambar5", maxCount: 1 },
-]);
+// const upload = multer({
+//   storage,
+//   fileFilter,
+//   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+// }).fields([
+//   { name: "gambar1", maxCount: 1 },
+//   { name: "gambar2", maxCount: 1 },
+//   { name: "gambar3", maxCount: 1 },
+//   { name: "gambar4", maxCount: 1 },
+//   { name: "gambar5", maxCount: 1 },
+// ]);
 
-routerDok.post("/upload", upload, uploadController);
+routerDok.post("/upload", uploadImages);
 
 export default routerDok;

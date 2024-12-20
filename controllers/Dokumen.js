@@ -1,5 +1,5 @@
 import Dokumen from "../model/dokumenModel.js";
-import uploadToDrive from "../config/driveConfig.js";
+import drive from "../config/driveConfig.js";
 
 import path from "path";
 import multer from "multer";
