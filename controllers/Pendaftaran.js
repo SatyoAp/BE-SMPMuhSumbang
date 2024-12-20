@@ -1,4 +1,5 @@
 import Pendaftaran from "../model/pendaftaranModel.js";
+import Users from "../model/usersModel.js";
 import {
   findPendaftaranById,
   removePendaftaranById,
@@ -47,7 +48,11 @@ export const postPendaftaran = async (req, res) => {
     status,
   } = req.body;
   // new
-  const userId = req.user.id;
+  const user = await Users.findOne({ where: { email } });
+  if (!user) {
+    return res.status(404).json({ message: "User tidak ditemukan" });
+  }
+  const userId = user.id;
   try {
     await Pendaftaran.create({
       nama: nama,
