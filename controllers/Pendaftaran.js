@@ -30,6 +30,10 @@ export const getPendaftaranById = async (req, res) => {
 };
 
 export const postPendaftaran = async (req, res) => {
+  if (!req.user || !req.user.id) {
+    return res.status(401).json({ msg: "User tidak terautentikasi" });
+  }
+  const userId = req.user.id;
   const {
     nama,
     tempat_lahir,
@@ -46,49 +50,47 @@ export const postPendaftaran = async (req, res) => {
     nilai_rata_rata,
   } = req.body;
   // new
-  const userId = req.user.id;
+
   try {
     await Pendaftaran.create({
-      nama: nama,
-      tempat_lahir: tempat_lahir,
-      tanggal_lahir: tanggal_lahir,
-      nama_ortu: nama_ortu,
-      alamat: alamat,
-      no_hp: no_hp,
-      nik: nik,
-      jenis_kelamin: jenis_kelamin,
-      asal_sekolah: asal_sekolah,
-      nilai_IPA: nilai_IPA,
-      nilai_Matematika: nilai_Matematika,
-      nilai_Bhs_Indonesia: nilai_Bhs_Indonesia,
-      nilai_rata_rata: nilai_rata_rata,
-      // new
-      userId: userId,
+      nama,
+      tempat_lahir,
+      tanggal_lahir,
+      nama_ortu,
+      alamat,
+      no_hp,
+      nik,
+      jenis_kelamin,
+      asal_sekolah,
+      nilai_IPA,
+      nilai_Matematika,
+      nilai_Bhs_Indonesia,
+      nilai_rata_rata,
+      userId,
       // image: fileName,
       // url: Url,
     });
     res.json({ msg: "Pendaftaran Berhasil" });
   } catch (error) {
     console.log(error.message);
+    res.status(500).json({ msg: "Terjadi kesalahan pada server" });
   }
-  // if (req.file === null)
-  //   return res.status(400).json({ msg: "Tidak ada file ter upload" });
-  // const file = req.files.file;
-  // const fileSize = file.data.length;
-  // const ext = path.extname(file.name);
-  // const fileName = file.md5 + ext;
-  // const Url = `${req.protocol}://${req.get("host")}/images/${fileName}`;
-  // const allowedType = [".png", ".jpg", ".pdf"];
 
-  // if (!allowedType.includes(ext.toLowerCase()))
-  //   return res.status(422).json({ msg: "Salah Extensi file" });
-  // if (fileSize > 5000000)
-  //   return res.status(422).json({ msg: "file maksimal 5 mb" });
-
-  // file.mv(`./public/images/${fileName}`, async (err) => {
-  //   if (err) return res.status(500).json({ msg: err.message });
-
-  // });
+  // nama: nama,
+  //     tempat_lahir: tempat_lahir,
+  //     tanggal_lahir: tanggal_lahir,
+  //     nama_ortu: nama_ortu,
+  //     alamat: alamat,
+  //     no_hp: no_hp,
+  //     nik: nik,
+  //     jenis_kelamin: jenis_kelamin,
+  //     asal_sekolah: asal_sekolah,
+  //     nilai_IPA: nilai_IPA,
+  //     nilai_Matematika: nilai_Matematika,
+  //     nilai_Bhs_Indonesia: nilai_Bhs_Indonesia,
+  //     nilai_rata_rata: nilai_rata_rata,
+  //     // new
+  //     userId: userId,
 };
 
 export const deletePendaftaranById = async (req, res, next) => {
