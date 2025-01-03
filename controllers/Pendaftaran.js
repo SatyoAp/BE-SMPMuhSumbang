@@ -30,7 +30,7 @@ export const getPendaftaranById = async (req, res) => {
 };
 
 export const postPendaftaran = async (req, res) => {
-  if (!req.user || !req.user.id) {
+  if (!req.user || !req.email) {
     return res.status(401).json({ msg: "User tidak terautentikasi" });
   }
   const userId = req.user.id;
