@@ -8,8 +8,8 @@ export const verifyToken = (req, res, next) => {
   if (!token) return res.sendStatus(401).json({ msg: "Token tidak ditemukan" });
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, email, user) => {
     if (err) return res.sendStatus(403).json({ msg: "Token tidak valid" });
-    req.email = decoded;
-    req.user = decoded;
+    req.email = email;
+    req.user = user;
     next();
   });
 };
