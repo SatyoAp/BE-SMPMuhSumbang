@@ -24,7 +24,7 @@ const server = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const port = process.env.MYSQLPORT;
+// const port = process.env.MYSQLPORT;
 
 try {
   await db.authenticate();
@@ -32,28 +32,25 @@ try {
 } catch (error) {
   console.error(error);
 }
-// server.use(bodyParser());
-// server.use(bodyParser.urlencoded({ extended: false }));
-// server.use(bodyParser.raw());
 server.use(bodyParser.json());
 // server.use(
 //   cors({ credentials: true, origin: "https://be-smp-muh-sumbang.vercel.app" })
 // );
-// server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
-const allowedOrigins = ["http://192.168.1.6:5173"];
+// const allowedOrigins = ["http://192.168.1.6:5173"];
 
-const corsOptions = {
-  credentials: true,
-  origin: (origin, callback) => {
-    // Cek apakah origin ada dalam daftar yang diizinkan
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true); // Izinkan origin
-    } else {
-      callback(new Error("Not allowed by CORS")); // Tolak origin
-    }
-  },
-};
+// const corsOptions = {
+//   credentials: true,
+//   origin: (origin, callback) => {
+//     // Cek apakah origin ada dalam daftar yang diizinkan
+//     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+//       callback(null, true); // Izinkan origin
+//     } else {
+//       callback(new Error("Not allowed by CORS")); // Tolak origin
+//     }
+//   },
+// };
 
 server.use(cors(corsOptions));
 // server.use(cookieParser());
@@ -79,5 +76,5 @@ server.use("/dokumen", routerDok);
 // });
 
 server.listen(port, () => {
-  console.log(`Server running di port ${port}`);
+  console.log(`Server running di port 3000`);
 });
