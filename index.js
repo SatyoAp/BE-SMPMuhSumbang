@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
-import multer from "multer";
+
 
 // Import route
 import router from "./routes/Users.js";
@@ -21,7 +21,6 @@ dotenv.config();
 startSequelize(db);
 
 const server = express();
-const upload = multer();
 // Mendefinisikan __filename dan __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,7 +64,6 @@ server.use((err, req, res, next) => {
 });
 
 server.use(bodyParser.json());
-server.use(upload.none());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use("/users", router);
