@@ -1,6 +1,6 @@
 import express from "express";
 import db from "./config/database.js";
-// import cookieParser from "cookie-parser";
+import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -52,8 +52,8 @@ const corsOptions = {
   },
 };
 server.use(cors(corsOptions));
+server.use(cookieParser());
 
-// server.use(cookieParser());
 // server.use(FileUpload());
 // server.use(express.static("uploads"));
 // server.use("/uploads", express.static(path.join(__dirname, "uploads")));
