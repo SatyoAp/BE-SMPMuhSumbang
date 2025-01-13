@@ -2,18 +2,21 @@ import { google } from "googleapis";
 import fs from "fs";
 import path from "path";
 import Dokumen from "../model/dokumenModel.js";
-import { fileURLToPath } from "url";
+// import { fileURLToPath } from "url";
 // // Mendefinisikan __filename dan __dirname
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __dirname = path.dirname(__filename);
 
 import dotenv from "dotenv";
 dotenv.config();
 
+const credentialsBase64 = process.env.GOOGLE_CREDENTIALS_BASE64;
+const credentialsJSON = JSON.parse(Buffer.from(credentialsBase64, 'base64').toString('utf-8'));
+
 const drive = google.drive({
   version: "v3",
   auth: new google.auth.GoogleAuth({
-    keyFile: path.resolve(__dirname, "../credentials.json"), // Ganti dengan path ke file kredensial Google API Anda
+    keyFile: credentialsJSON, // Ganti dengan path ke file kredensial Google API Anda
     scopes: ["https://www.googleapis.com/auth/drive.file"],
   }),
 });
