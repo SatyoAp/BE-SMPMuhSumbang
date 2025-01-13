@@ -24,7 +24,7 @@ const drive = google.drive({
 export const uploadToGoogleDrive = async (filePath, fileName) => {
   try {
     const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID; //
-    const fileMetadata = { name: fileName , parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],};
+    const fileMetadata = { name: fileName , parents: folderId};
     const media = {
       mimeType: "image/jpeg", // Ganti sesuai jenis file
       body: fs.createReadStream(filePath),
