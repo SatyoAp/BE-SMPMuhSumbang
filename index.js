@@ -38,7 +38,7 @@ server.use(bodyParser.json());
 // );
 // server.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
-const allowedOrigins = ["http://192.168.1.6:5173", ["http://192.168.1.6:5174"] ];
+const allowedOrigins = ["http://192.168.1.6:5173", "http://192.168.1.6:5174" ];
 
 const corsOptions = {
   credentials: true,
