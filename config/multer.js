@@ -1,10 +1,17 @@
 import multer from "multer";
 import path from "path";
+import fs from "fs";
+
+// Pastikan direktori 'uploads/' ada
+const uploadDir = "uploads/";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // Tentukan direktori tempat menyimpan file sementara
-    cb(null, "uploads/");
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     // Buat nama file unik berdasarkan timestamp
@@ -26,7 +33,7 @@ export const uploadImage = multer({
     if (extName && mimeType) {
       return cb(null, true);
     } else {
-      cb(new Error("Hanya file gambar dengan format JPEG, JPG, atau PNG yang diperbolehkan!"));
+      cb(new Error("Only images are allowed"));
     }
   },
 });
