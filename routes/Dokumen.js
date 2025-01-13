@@ -3,12 +3,13 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import {
-  uploadImages,
   getDokumen,
   deleteData,
   getDokumenById,
+  uploadFileController
 } from "../controllers/Dokumen.js";
 import { fileURLToPath } from "url";
+import { uploadImage } from "../config/multer.js";
 
 // // Mendefinisikan __filename dan __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -18,6 +19,14 @@ const routerDok = express.Router();
 routerDok.get("/", getDokumen);
 routerDok.get("/:id", getDokumenById);
 routerDok.delete("/delete/:id", deleteData);
+routerDok.post("/upload",
+  uploadImage.fields([
+    { name: "gambar1", maxCount: 1 },
+    { name: "gambar2", maxCount: 1 },
+    { name: "gambar3", maxCount: 1 },
+    { name: "gambar4", maxCount: 1 },
+    { name: "gambar5", maxCount: 1 },
+  ]), uploadFileController);
 
 // Endpoint untuk mengunggah gambar
 // const storage = multer.diskStorage({
@@ -109,6 +118,6 @@ routerDok.delete("/delete/:id", deleteData);
 //   { name: "gambar5", maxCount: 1 },
 // ]);
 
-routerDok.post("/upload", uploadImages);
+
 
 export default routerDok;

@@ -6,11 +6,11 @@ import {
   Logout,
   getAdminById,
 } from "../controllers/Admin.js";
-import { verifyToken } from "../middleware/Token.js";
+import { AdminToken } from "../middleware/Token.js";
 import { refreshToken } from "../controllers/RefreshTokenAdmin.js";
 
 const routerAd = express.Router();
-routerAd.get("/", getAdmin);
+routerAd.get("/", AdminToken, getAdmin);
 // router.get("/:id", getAdminById);
 routerAd.post("/register", Register);
 routerAd.post("/login", Login);

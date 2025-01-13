@@ -7,6 +7,11 @@ const { DataTypes } = Sequelize;
 const Dokumen = db.define(
   "dokumen",
   {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     gambar1: {
       type: DataTypes.STRING,
     },

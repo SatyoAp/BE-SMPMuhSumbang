@@ -15,45 +15,59 @@ const Pendaftaran = db.define(
     },
     nama: {
       type: DataTypes.STRING,
+      allowNull: false, 
     },
     tempat_lahir: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
     tanggal_lahir: {
       type: DataTypes.DATE,
+      allowNull: false,
     },
     nama_ortu: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
     alamat: {
       type: DataTypes.TEXT,
+      allowNull: false,
     },
     no_hp: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
     nik: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
     jenis_kelamin: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
     asal_sekolah: {
       type: DataTypes.TEXT,
+      allowNull: false,
     },
     nilai_IPA: {
       type: DataTypes.INTEGER,
+      allowNull: false,
     },
     nilai_Matematika: {
       type: DataTypes.INTEGER,
+      allowNull: false,
     },
     nilai_Bhs_Indonesia: {
       type: DataTypes.INTEGER,
+      allowNull: false,
     },
     nilai_rata_rata: {
       type: DataTypes.INTEGER,
+      allowNull: false,
     },
     status: {
       type: DataTypes.STRING,
+      allowNull: true,
     },
     // new
     userId: {
@@ -82,8 +96,8 @@ const Pendaftaran = db.define(
 
 // return pendaftaran;
 
-users.hasOne(Pendaftaran);
-Pendaftaran.belongsTo(users);
+users.hasOne(Pendaftaran, { foreignKey: "userId" });
+Pendaftaran.belongsTo(users, { foreignKey: "userId" });
 admin.hasMany(Pendaftaran, { foreignKey: "adminId" });
 Pendaftaran.belongsTo(admin, { foreignKey: "adminId" });
 

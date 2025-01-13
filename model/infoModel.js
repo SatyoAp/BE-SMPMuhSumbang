@@ -14,15 +14,19 @@ const Info = db.define(
     },
     tanggal_buka: {
       type: DataTypes.DATE,
+      allowNull: false,
     },
     tanggal_tutup: {
       type: DataTypes.DATE,
+      allowNull: false,
     },
     status: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
     detail: {
       type: DataTypes.TEXT,
+      allowNull: false,
     },
   },
   {
@@ -30,7 +34,7 @@ const Info = db.define(
   }
 );
 
-admin.hasMany(Info);
-Info.belongsTo(admin);
+admin.hasMany(Info, { foreignKey: "adminId" });
+Info.belongsTo(admin, { foreignKey: "adminId" });
 
 export default Info;

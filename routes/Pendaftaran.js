@@ -7,12 +7,13 @@ import {
   deletePendaftaranById,
 } from "../controllers/Pendaftaran.js";
 import { verifyToken } from "../middleware/Token.js";
+import { AdminToken } from "../middleware/Token.js";
 
 const pendaftaranRouter = express.Router();
 pendaftaranRouter.get("/", getPendaftaran);
 pendaftaranRouter.get("/:id", getPendaftaranById);
 pendaftaranRouter.delete("/:id", deletePendaftaranById);
-pendaftaranRouter.put("/:id", putPendaftaranById);
+pendaftaranRouter.put("/:id", AdminToken, putPendaftaranById);
 pendaftaranRouter.post("/", verifyToken, postPendaftaran);
 
 export default pendaftaranRouter;

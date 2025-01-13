@@ -6,12 +6,13 @@ import {
   putInfoById,
   deleteInfoById,
 } from "../controllers/Info.js";
+import { AdminToken } from "../middleware/Token.js";
 
 const infoRouter = express.Router();
 infoRouter.get("/", getInfo);
 infoRouter.get("/:id", getInfoById);
-infoRouter.delete("/:id", deleteInfoById);
-infoRouter.put("/:id", putInfoById);
-infoRouter.post("/", postInfo);
+infoRouter.delete("/:id", AdminToken, deleteInfoById);
+infoRouter.put("/:id", AdminToken, putInfoById);
+infoRouter.post("/", AdminToken, postInfo);
 
 export default infoRouter;

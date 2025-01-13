@@ -28,8 +28,8 @@ export const updatePendaftaranById = async (
   nilai_Bhs_Indonesia,
   nilai_rata_rata,
   status,
-  image,
-  url
+  // image,
+  // url
 ) => {
   return await Pendaftaran.update(
     {
@@ -47,8 +47,8 @@ export const updatePendaftaranById = async (
       nilai_Bhs_Indonesia,
       nilai_rata_rata,
       status,
-      image,
-      url,
+      // image,
+      // url,
     },
     {
       where: { id },

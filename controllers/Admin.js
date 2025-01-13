@@ -57,21 +57,21 @@ export const Register = async (req, res) => {
 
 export const Login = async (req, res) => {
   try {
-    const admin = await Admin.findAll({
+    const admin = await Admin.findOne({
       where: {
         email: req.body.email,
       },
     });
-    const match = await bcrypt.compare(req.body.password, user[0].password);
+    const match = await bcrypt.compare(req.body.password, admin.password);
     if (!match) return res.status(400).json({ msg: "Password Salah" });
-    const adminId = user[0].id;
-    const name = user[0].name;
-    const email = user[0].email;
+    const adminId = admin.id;
+    const name = admin.name;
+    const email = admin.email;
     const accessToken = jwt.sign(
       { adminId, name, email },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: "20s",
+        expiresIn: "1d",
       }
     );
     const refreshToken = jwt.sign(
@@ -94,7 +94,14 @@ export const Login = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
       secure: true,
     });
-    res.json({ accessToken });
+    res.json({ 
+      accessToken, 
+      admin: {
+        id: admin.id,
+        name: admin.name,
+        email: admin.email,
+      },
+    });
   } catch (error) {
     res.status(404).json({ msg: "Email Salah...!!" });
   }
@@ -108,8 +115,8 @@ export const Logout = async (req, res) => {
       refresh_token: refreshToken,
     },
   });
-  if (!admin[0]) return res.sendStatus(204);
-  const adminId = admin[0].id;
+  if (!admin) return res.sendStatus(204);
+  const adminId = admin.id;
   await Admin.update(
     { refresh_token: null },
     {

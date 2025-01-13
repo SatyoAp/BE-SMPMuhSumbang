@@ -1,90 +1,68 @@
-// import { google } from "googleapis";
-// import dotenv from "dotenv";
-// import fs from "fs";
-// dotenv.config();
-
-// const oauth2Client = new google.auth.OAuth2(
-//   process.env.GOOGLE_DRIVE_CLIENT_ID,
-//   process.env.GOOGLE_DRIVE_CLIENT_SECRET
-// );
-
-// oauth2Client.setCredentials({
-//   refresh_token: process.env.GOOGLE_DRIVE_REFRESH_TOKEN,
-// });
-
-// const drive = google.drive({
-//   version: "v3",
-//   auth: oauth2Client,
-// });
-
-// export const uploadFileToDrive = async (file) => {
-//   const response = await drive.files.create({
-//     requestBody: {
-//       name: file.originalname,
-//       parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
-//     },
-//     media: {
-//       mimeType: file.mimetype,
-//       body: fs.createReadStream(filePath),
-//     },
-//   });
-
-//   // Make file public
-//   await drive.permissions.create({
-//     fileId: response.data.id,
-//     requestBody: {
-//       role: "reader",
-//       type: "anyone",
-//     },
-//   });
-
-//   return `https://drive.google.com/uc?id=${response.data.id}`;
-// };
-// // bismillah
-
 import { google } from "googleapis";
-import path from "path";
 import fs from "fs";
+import path from "path";
+import Dokumen from "../model/dokumenModel.js";
+import { fileURLToPath } from "url";
+// // Mendefinisikan __filename dan __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 import dotenv from "dotenv";
 dotenv.config();
 
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET
-);
-
-oauth2Client.setCredentials({
-  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+const drive = google.drive({
+  version: "v3",
+  auth: new google.auth.GoogleAuth({
+    keyFile: path.resolve(__dirname, "../credentials.json"), // Ganti dengan path ke file kredensial Google API Anda
+    scopes: ["https://www.googleapis.com/auth/drive.file"],
+  }),
 });
 
-const drive = google.drive({ version: "v3", auth: oauth2Client });
+export const uploadToGoogleDrive = async (filePath, fileName) => {
+  try {
+    const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID; //
+    const fileMetadata = { name: fileName , parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],};
+    const media = {
+      mimeType: "image/jpeg", // Ganti sesuai jenis file
+      body: fs.createReadStream(filePath),
+    };
 
-export default drive;
-// const auth = new google.auth.GoogleAuth({
-//   keyFile: process.env.GOOGLE_KEYFILE,
-//   scopes: ["https://www.googleapis.com/auth/drive"],
-// });
+    const response = await drive.files.create({
+      requestBody: fileMetadata,
+      media: media,
+      fields: "id",
+    });
 
-// export const drive = google.drive({ version: "v3", auth });
+    const fileId = response.data.id;
 
-// const uploadToDrive = async (filePath, fileName) => {
-//   const fileMetadata = {
-//     name: fileName,
-//     parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
-//   };
+    // Buat file bisa diakses publik
+    await drive.permissions.create({
+      fileId: fileId,
+      requestBody: {
+        role: "reader",
+        type: "anyone",
+      },
+    });
 
-//   const media = {
-//     mimeType: "image/jpeg",
-//     body: fs.createReadStream(filePath),
-//   };
+    // Dapatkan URL publik
+    const fileUrl = `https://drive.google.com/uc?id=${fileId}`;
+    return fileUrl;
+  } catch (error) {
+    console.error("Error uploading to Google Drive:", error.message);
+    throw error;
+  }
+};
 
-//   const response = await drive.files.create({
-//     resource: fileMetadata,
-//     media: media,
-//     fields: "id, webViewLink",
-//   });
+export const saveFileToDatabase = async (id, columnName, url) => {
+  try {
+    await Dokumen.update(
+      { [columnName]: url }, // Kolom gambar1, gambar2, dll
+      { where: { id: id } } // Ganti dengan ID Dokumen
+    );
+    console.log(`URL berhasil disimpan ke kolom ${columnName} untuk ID: ${id}`);
+  } catch (error) {
+    console.error("Error saving file URL to database:", error.message);
+    throw error;
+  }
+};
 
-//   return response.data;
-// };
-
-// export default uploadToDrive;
