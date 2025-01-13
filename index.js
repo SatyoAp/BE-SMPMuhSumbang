@@ -32,7 +32,7 @@ try {
 } catch (error) {
   console.error(error);
 }
-server.use(bodyParser.json());
+
 // server.use(
 //   // cors({ credentials: true, origin: "https://be-smp-muh-sumbang.vercel.app" })
 // );
@@ -63,6 +63,7 @@ server.use((err, req, res, next) => {
 });
 
 server.use(express.json());
+server.use(bodyParser.json());
 server.use(express.urlencoded({ extended: true }));
 server.use("/users", router);
 server.use("/pendaftaran", pendaftaranRouter);
