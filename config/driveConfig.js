@@ -4,7 +4,7 @@ import path from "path";
 import Dokumen from "../model/dokumenModel.js";
 // import { fileURLToPath } from "url";
 // // Mendefinisikan __filename dan __dirname
-const __filename = fileURLToPath(import.meta.url);
+// const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 
 import dotenv from "dotenv";
